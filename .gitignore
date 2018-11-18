@@ -1,0 +1,15 @@
+# docs
+docs/*
+
+# typescript
+dist
+
+# dependencies
+/node_modules
+
+# misc
+/connect.lock
+/coverage/*
+npm-debug.log*
+yarn-error.log
+.vscode
