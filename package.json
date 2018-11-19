@@ -46,6 +46,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.9",
+    "lodash.camelcase": "^4.3.0",
     "jest": "^23.6.0",
     "prettier": "^1.15.2",
     "rollup": "^0.67.3",
