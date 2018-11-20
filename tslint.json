@@ -5,11 +5,6 @@
     "tslint-eslint-rules",
     "tslint-config-prettier"
   ],
-  "linterOptions": {
-    "exclude": [
-      "tests/locale-data.ts"
-    ]
-  },
   "jsRules": {},
   "rules": {
     "prettier": [
@@ -17,7 +12,10 @@
       {
         "singleQuote": true
       }
-    ]
+    ],
+    "interface-over-type-literal": false,
+    "ban-types": false,
+    "array-type": false
   },
   "rulesDirectory": [
     "tslint-plugin-prettier"
