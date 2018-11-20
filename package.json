@@ -1,5 +1,5 @@
 {
-  "name": "y",
+  "name": "intersection-observer-admin",
   "version": "0.0.0",
   "description": "Intersection Observer Admin for better performance",
   "main": "dist/intersection-observer-admin.umd.js",
