@@ -8,7 +8,7 @@ intersection-observer-admin
 
 Why use this?
 ------------------------------------------------------------------------------
-This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport).  This library is particularly important for re-using the IntersectionObserver API.  [IntersectionObserver.observer](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple elements.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.
+This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport).  This library is particularly important for re-using the IntersectionObserver API.  [IntersectionObserver.observer](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple elements.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.  This can dramatically improve performance for pages with lots of elements and observers.
 
 Installation
 ------------------------------------------------------------------------------
@@ -19,21 +19,27 @@ npm install intersection-observer-admin --save
 
 Usage
 ------------------------------------------------------------------------------
-### API
+## API
 
 1. element: DOM Node to observe
 2. enterCallback: Function
-  - callback function to perform logic in your own application
+    - callback function to perform logic in your own application
 3. exitCallback: Function
-  - callback function to perform when element is leaving the viewport
+    - callback function to perform when element is leaving the viewport
+4. observerOptions: Function
+    - list of options to pass to Intersection Observer constructor (https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver)
 4. scrollableArea: String
-  - used for determining if element should use existing or new IntersectionObserver
+    - used for determining if element should use existing or new IntersectionObserver
 
 ```js
-import intersectionObserverAdmin from 'intersection-observer-admin';
+import IntersectionObserverAdmin from 'intersection-observer-admin';
 
+const intersectionObserverAdmin = new IntersectionObserver();
+
+// add an element to static administrator
 intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
+// remove an element from the static administrator
 intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 }, '.my-list');
 
 // Use in cleanup lifecycle hooks (if applicable) from the element being observed
@@ -44,4 +50,48 @@ intersectionObserverAdmin.unobserve(element, observerOptions, scrollableArea);
 intersectionObserverAdmin.destroy();
 ```
 
-Options passed to `add` are the same options available to the Instersection Observer [API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver)
+IntersectionObserver's Browser Support](https://platform-status.mozilla.org/)
+------------------------------------------------------------------------------
+### Out of the box
+
+<table>
+    <tr>
+        <td>Chrome</td>
+        <td>51 <sup>[1]</sup></td>
+    </tr>
+    <tr>
+        <td>Firefox (Gecko)</td>
+        <td>55 <sup>[2]</sup></td>
+    </tr>
+    <tr>
+        <td>MS Edge</td>
+        <td>15</td>
+    </tr>
+    <tr>
+        <td>Internet Explorer</td>
+        <td>Not supported</td>
+    </tr>
+    <tr>
+        <td>Opera <sup>[1]</sup></td>
+        <td>38</td>
+    </tr>
+    <tr>
+        <td>Safari</td>
+        <td>Safari Technology Preview</td>
+    </tr>
+    <tr>
+        <td>Chrome for Android</td>
+        <td>59</td>
+    </tr>
+    <tr>
+        <td>Android Browser</td>
+        <td>56</td>
+    </tr>
+    <tr>
+        <td>Opera Mobile</td>
+        <td>37</td>
+    </tr>
+</table>
+
+* [1] [Reportedly available](https://www.chromestatus.com/features/5695342691483648), it didn't trigger the events on initial load and lacks `isIntersecting` until later versions.
+* [2] This feature was implemented in Gecko 53.0 (Firefox 53.0 / Thunderbird 53.0 / SeaMonkey 2.50) behind the preference `dom.IntersectionObserver.enabled`.
