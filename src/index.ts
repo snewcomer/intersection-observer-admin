@@ -4,7 +4,7 @@ type IndividualEntry = {
   exitCallback?: Function
 }
 
-type ObserverOption = {
+export interface ObserverOption {
   root?: HTMLElement,
   rootMargin?: string,
   threshold?: number,
@@ -21,7 +21,7 @@ type PotentialRootEntry = {
   [stringifiedOptions:string]: RootEntry
 }
 
-export class IntersectionObserverAdmin {
+export default class IntersectionObserverAdmin {
   private DOMRef: WeakMap<HTMLElement | Window, PotentialRootEntry> | null
 
   constructor() {
