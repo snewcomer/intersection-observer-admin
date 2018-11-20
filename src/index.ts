@@ -40,7 +40,7 @@ export default class IntersectionObserverAdmin {
    * @param {String} scrollableArea
    * @public
    */
-  add(element: HTMLElement, enterCallback: Function, exitCallback: Function, observerOptions: ObserverOption, scrollableArea: string) {
+  add(element: HTMLElement, enterCallback: Function, exitCallback: Function, observerOptions?: ObserverOption, scrollableArea?: string) {
     if (!element || !observerOptions) {
       return;
     }
@@ -90,7 +90,7 @@ export default class IntersectionObserverAdmin {
    * @param {String} scrollableArea
    * @public
    */
-  unobserve(target: HTMLElement, observerOptions: ObserverOption, scrollableArea: string) {
+  unobserve(target: HTMLElement, observerOptions: ObserverOption, scrollableArea: string): void {
     let matchingRootEntry: RootEntry | undefined = this._findMatchingRootEntry(observerOptions, scrollableArea);
 
     if (matchingRootEntry) {
@@ -113,7 +113,7 @@ export default class IntersectionObserverAdmin {
    * @method destroy
    * @public
    */
-  destroy() {
+  destroy(): void {
     this.DOMRef = null;
   }
 
@@ -124,7 +124,7 @@ export default class IntersectionObserverAdmin {
    * @param {Object} observerOptions
    * @param {String} scrollableArea
    */
-  protected _setupOnIntersection(observerOptions: ObserverOption, scrollableArea: string) {
+  protected _setupOnIntersection(observerOptions: ObserverOption, scrollableArea: string | undefined): Function {
     return (entries: any) => {
       return this._onIntersection(observerOptions, scrollableArea, entries);
     }
@@ -139,7 +139,7 @@ export default class IntersectionObserverAdmin {
    * @param {Array} ioEntries
    * @private
    */
-  protected _onIntersection(observerOptions: ObserverOption, scrollableArea: string, ioEntries: Array<any>) {
+  protected _onIntersection(observerOptions: ObserverOption, scrollableArea: string | undefined, ioEntries: Array<any>): void {
     ioEntries.forEach((entry) => {
 
       let { isIntersecting, intersectionRatio } = entry;
@@ -203,7 +203,7 @@ export default class IntersectionObserverAdmin {
    * @param {String} scrollableArea
    * @return {Object} entry with elements and other options
    */
-  protected _findMatchingRootEntry(observerOptions: ObserverOption, scrollableArea: string): RootEntry | undefined {
+  protected _findMatchingRootEntry(observerOptions: ObserverOption, scrollableArea: string | undefined): RootEntry | undefined {
     let { root = window } = observerOptions;
     let matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(root);
     if (matchingRoot) {
@@ -243,7 +243,7 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {Boolean}
    */
-  protected _areOptionsSame(observerOptions: ObserverOption, comparableOptions: ObserverOption) {
+  protected _areOptionsSame(observerOptions: ObserverOption, comparableOptions: ObserverOption): Boolean {
     // simple comparison of string, number or even null/undefined
     let type1 = Object.prototype.toString.call(observerOptions);
     let type2 = Object.prototype.toString.call(comparableOptions);
@@ -274,9 +274,9 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {String}
    */
-  protected _stringifyObserverOptions(observerOptions: ObserverOption, scrollableArea: string): string {
+  protected _stringifyObserverOptions(observerOptions: ObserverOption, scrollableArea: string | undefined): string {
     let replacer = (key: string, value: string): string => {
-      if (key === 'root') {
+      if (key === 'root' && scrollableArea) {
         return scrollableArea;
       }
       return value;
