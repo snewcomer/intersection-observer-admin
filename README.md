@@ -6,9 +6,11 @@ intersection-observer-admin
 [![Dependency Status](https://david-dm.org/snewcomer/intersection-observer-admin.svg)](https://david-dm.org/snewcomer/intersection-observer-admin)
 [![devDependency Status](https://david-dm.org/snewcomer/intersection-observer-admin/dev-status.svg)](https://david-dm.org/snewcomer/intersection-observer-admin#info=devDependencies)
 
-Why use this?
+Why use an administrator to manage all the elements on my page?
 ------------------------------------------------------------------------------
-This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport).  This library is particularly important for re-using the IntersectionObserver API.  [IntersectionObserver.observer](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple elements.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.  This can dramatically improve performance for pages with lots of elements and observers.
+This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport).  This library is particularly important for re-using the IntersectionObserver API.
+
+Most implementations have one Intersection Observer for each target element or so called `sentinel`.  However, [IntersectionObserver.observe](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple `sentinels`.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.  This can dramatically improve performance for pages with lots of elements and observers.
 
 Installation
 ------------------------------------------------------------------------------
@@ -37,7 +39,7 @@ import IntersectionObserverAdmin from 'intersection-observer-admin';
 const intersectionObserverAdmin = new IntersectionObserver();
 
 // add an element to static administrator
-intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
+intersectionObserverAdmin.observe(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
 // remove an element from the static administrator
 intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 }, '.my-list');

@@ -40,7 +40,7 @@ export default class IntersectionObserverAdmin {
    * @param {String} scrollableArea
    * @public
    */
-  public add(
+  public observe(
     element: HTMLElement,
     enterCallback: Function,
     exitCallback: Function,
@@ -236,7 +236,9 @@ export default class IntersectionObserverAdmin {
   protected _findRoot(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
-    return this.DOMRef && this.DOMRef.get(root);
+    if (this.DOMRef) {
+      return this.DOMRef.get(root);
+    }
   }
 
   /**
