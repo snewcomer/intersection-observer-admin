@@ -8,7 +8,7 @@ intersection-observer-admin
 
 Why use an administrator to manage all the elements on my page?
 ------------------------------------------------------------------------------
-This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport).  This library is particularly important for re-using the IntersectionObserver API.
+This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport) and [ember-infinity](https://github.com/ember-infinity/ember-infinity).  This library is particularly important for re-using the IntersectionObserver API.
 
 Most implementations have one Intersection Observer for each target element or so called `sentinel`.  However, [IntersectionObserver.observe](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple `sentinels`.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.  This can dramatically improve performance for pages with lots of elements and observers.
 
@@ -41,7 +41,7 @@ const intersectionObserverAdmin = new IntersectionObserver();
 // add an element to static administrator
 intersectionObserverAdmin.observe(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
-// remove an element from the static administrator
+// add an element in a scrolling container
 intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 }, '.my-list');
 
 // Use in cleanup lifecycle hooks (if applicable) from the element being observed
