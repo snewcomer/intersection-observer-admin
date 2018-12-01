@@ -2,7 +2,6 @@ import camelCase from 'lodash.camelcase';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import sourceMaps from 'rollup-plugin-sourcemaps';
-import { uglify } from "rollup-plugin-uglify";
 
 const pkg = require('./package.json');
 const libraryName = 'intersection-observer-admin';
@@ -22,8 +21,7 @@ export default {
     resolve(),
 
     // Resolve source maps to the original source
-    sourceMaps(),
-    uglify()
+    sourceMaps()
   ],
   sourcemap: true,
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
