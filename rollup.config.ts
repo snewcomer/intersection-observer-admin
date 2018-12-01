@@ -10,8 +10,7 @@ export default {
   external: [],
   input: `dist/es/index.js`,
   output: [
-    { file: pkg.main, name: camelCase(libraryName), format: 'umd' },
-    { file: pkg.module, format: 'es' }
+    { file: pkg.main, name: camelCase(libraryName), format: 'umd' }
   ],
   plugins: [
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
