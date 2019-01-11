@@ -52,7 +52,7 @@ intersectionObserverAdmin.unobserve(element, observerOptions, scrollableArea);
 intersectionObserverAdmin.destroy();
 ```
 
-IntersectionObserver's Browser Support](https://platform-status.mozilla.org/)
+[IntersectionObserver's Browser Support](https://platform-status.mozilla.org/)
 ------------------------------------------------------------------------------
 ### Out of the box
 
