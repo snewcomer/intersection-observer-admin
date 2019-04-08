@@ -1,4 +1,4 @@
-describe('format number', () => {
+describe('add entry', () => {
   it('ok', () => {
     expect(true).toBe(true);
   });

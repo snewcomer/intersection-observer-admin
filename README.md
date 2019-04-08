@@ -28,7 +28,7 @@ Usage
     - callback function to perform logic in your own application
 3. exitCallback: Function
     - callback function to perform when element is leaving the viewport
-4. observerOptions: Function
+4. observerOptions: Object
     - list of options to pass to Intersection Observer constructor (https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver)
 4. scrollableArea: String
     - used for determining if element should use existing or new IntersectionObserver
@@ -36,7 +36,7 @@ Usage
 ```js
 import IntersectionObserverAdmin from 'intersection-observer-admin';
 
-const intersectionObserverAdmin = new IntersectionObserver();
+const intersectionObserverAdmin = new IntersectionObserverAdmin();
 
 // add an element to static administrator
 intersectionObserverAdmin.observe(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
