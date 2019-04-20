@@ -1,10 +1,5 @@
-import Registry from 'weak-map-element-registry';
-
-type IndividualEntry = {
-  element?: HTMLElement | Window;
-  enterCallback?: Function;
-  exitCallback?: Function;
-};
+import Notifications, { CallbackType } from './notification';
+import Registry from './registry';
 
 export interface IOptions {
   root?: HTMLElement;
@@ -14,20 +9,21 @@ export interface IOptions {
   [key: string]: any;
 }
 
-type Root = {
-  elements: [IndividualEntry];
+type EntryForKey = {
+  elements: [HTMLElement];
   options: IOptions;
   intersectionObserver: any;
 };
 
 type PotentialRootEntry = {
-  [stringifiedOptions: string]: Root;
+  [stringifiedOptions: string]: EntryForKey;
 };
 
-export default class IntersectionObserverAdmin {
+export default class IntersectionObserverAdmin extends Notifications {
   private elementRegistry: Registry;
 
   constructor() {
+    super();
     this.elementRegistry = new Registry();
   }
 
@@ -37,24 +33,17 @@ export default class IntersectionObserverAdmin {
    *
    * @method add
    * @param {HTMLElement | Window} element
-   * @param {Function} enterCallback
-   * @param {Function} exitCallback
    * @param {Object} options
    * @public
    */
-  public observe(
-    element: HTMLElement,
-    enterCallback: Function,
-    exitCallback: Function,
-    options?: IOptions
-  ): void {
-    if (!element || !options) {
+  public observe(element: HTMLElement, options: IOptions = {}): void {
+    if (!element) {
       return;
     }
 
     this.elementRegistry.addElement(element, options);
 
-    this.setupObserver(element, enterCallback, exitCallback, options);
+    this.setupObserver(element, options);
   }
 
   /**
@@ -63,22 +52,63 @@ export default class IntersectionObserverAdmin {
    * @method unobserve
    * @param {HTMLElement|Window} target
    * @param {Object} options
-   * @param {String} scrollableArea
    * @public
    */
-  public unobserve(
-    target: HTMLElement,
-    options: IOptions,
-    scrollableArea: string
-  ): void {
-    const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
-      options
-    );
+  public unobserve(target: HTMLElement, options: IOptions): void {
+    const matchingRootEntry:
+      | EntryForKey
+      | undefined = this._findMatchingRootEntry(options);
 
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
       intersectionObserver.unobserve(target);
     }
+  }
+
+  /**
+   * register event to handle when intersection observer detects enter
+   *
+   * @method addEnterCallback
+   * @public
+   */
+  public addEnterCallback(
+    element: HTMLElement | Window,
+    callback: (data?: any) => void
+  ) {
+    this.addCallback(CallbackType.enter, element, callback);
+  }
+
+  /**
+   * register event to handle when intersection observer detects exit
+   *
+   * @method addExitCallback
+   * @public
+   */
+  public addExitCallback(
+    element: HTMLElement | Window,
+    callback: (data?: any) => void
+  ) {
+    this.addCallback(CallbackType.exit, element, callback);
+  }
+
+  /**
+   * retrieve registered callback and call with data
+   *
+   * @method dispatchEnterCallback
+   * @public
+   */
+  public dispatchEnterCallback(element: HTMLElement | Window) {
+    this.dispatchCallback(CallbackType.enter, element);
+  }
+
+  /**
+   * retrieve registered callback and call with data on exit
+   *
+   * @method dispatchExitCallback
+   * @public
+   */
+  public dispatchExitCallback(element: HTMLElement | Window) {
+    this.dispatchCallback(CallbackType.exit, element);
   }
 
   /**
@@ -96,7 +126,6 @@ export default class IntersectionObserverAdmin {
    *
    * @method setupOnIntersection
    * @param {Object} options
-   * @param {String} scrollableArea
    */
   protected setupOnIntersection(options: IOptions): Function {
     return (ioEntries: any) => {
@@ -104,12 +133,7 @@ export default class IntersectionObserverAdmin {
     };
   }
 
-  protected setupObserver(
-    element: HTMLElement,
-    enterCallback: Function,
-    exitCallback: Function,
-    options: IOptions
-  ): void {
+  protected setupObserver(element: HTMLElement, options: IOptions): void {
     const { root = window } = options;
 
     // find shared root element (window or scrollable area)
@@ -132,7 +156,7 @@ export default class IntersectionObserverAdmin {
     // next add found entry to elements and call observer if applicable
     if (matchingEntryForRoot) {
       const { elements, intersectionObserver } = matchingEntryForRoot;
-      elements.push({ element, enterCallback, exitCallback });
+      elements.push(element);
       if (intersectionObserver) {
         intersectionObserver.observe(element);
       }
@@ -141,8 +165,8 @@ export default class IntersectionObserverAdmin {
       // watcher is an instance that has an observe method
       const intersectionObserver = this.newObserver(element, options);
 
-      const observerEntry: Root = {
-        elements: [{ element, enterCallback, exitCallback }],
+      const observerEntry: EntryForKey = {
+        elements: [element],
         intersectionObserver,
         options
       };
@@ -184,7 +208,6 @@ export default class IntersectionObserverAdmin {
    *
    * @method onIntersection
    * @param {Object} options
-   * @param {String} scrollableArea
    * @param {Array} ioEntries
    * @private
    */
@@ -195,17 +218,14 @@ export default class IntersectionObserverAdmin {
       // first determine if entry intersecting
       if (isIntersecting) {
         // then find entry's callback in static administration
-        const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
-          options
-        );
+        const matchingRootEntry:
+          | EntryForKey
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
-          matchingRootEntry.elements.some((obj: IndividualEntry) => {
-            if (obj.element === entry.target) {
-              // call entry's enter callback
-              if (obj.enterCallback) {
-                obj.enterCallback();
-              }
+          matchingRootEntry.elements.some((element: HTMLElement) => {
+            if (element && element === entry.target) {
+              this.dispatchEnterCallback(element);
               return true;
             }
             return false;
@@ -213,17 +233,14 @@ export default class IntersectionObserverAdmin {
         }
       } else if (intersectionRatio <= 0) {
         // then find entry's callback in static administration
-        const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
-          options
-        );
+        const matchingRootEntry:
+          | EntryForKey
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
-          matchingRootEntry.elements.some((obj: IndividualEntry) => {
-            if (obj.element === entry.target) {
-              // call entry's enter callback
-              if (obj.exitCallback) {
-                obj.exitCallback();
-              }
+          matchingRootEntry.elements.some((element: HTMLElement) => {
+            if (element && element === entry.target) {
+              this.dispatchExitCallback(element);
               return true;
             }
             return false;
@@ -256,7 +273,7 @@ export default class IntersectionObserverAdmin {
    * @param {Object} options
    * @return {Object} entry with elements and other options
    */
-  private _findMatchingRootEntry(options: IOptions): Root | undefined {
+  private _findMatchingRootEntry(options: IOptions): EntryForKey | undefined {
     const { root = window } = options;
     const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(
       root
@@ -281,7 +298,7 @@ export default class IntersectionObserverAdmin {
   private _determineMatchingElements(
     options: IOptions,
     potentialRootMatch: PotentialRootEntry
-  ): Root | undefined {
+  ): EntryForKey | undefined {
     const matchingKey = Object.keys(potentialRootMatch).filter(key => {
       const { options: comparableOptions } = potentialRootMatch[key];
       return this._areOptionsSame(options, comparableOptions);

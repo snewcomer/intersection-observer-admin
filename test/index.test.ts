@@ -1,10 +1,19 @@
 import IntersectionObserverAdmin from '../src/index';
 
 describe('add entry', () => {
-  it('no options', () => {
+  it('observe exists', () => {
     const el = document.createElement('div');
     const ioAdmin = new IntersectionObserverAdmin();
-    const noop = () => 'hi';
-    ioAdmin.observe(el, noop, noop);
+    expect(ioAdmin.observe).toBeDefined();
+    expect(ioAdmin.unobserve).toBeDefined();
+  });
+
+  it('callbacks', () => {
+    const el = document.createElement('div');
+    const ioAdmin = new IntersectionObserverAdmin();
+    expect(ioAdmin.addEnterCallback).toBeDefined();
+    expect(ioAdmin.addExitCallback).toBeDefined();
+    expect(ioAdmin.dispatchEnterCallback).toBeDefined();
+    expect(ioAdmin.dispatchExitCallback).toBeDefined();
   });
 });

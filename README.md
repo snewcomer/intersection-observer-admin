@@ -38,14 +38,18 @@ import IntersectionObserverAdmin from 'intersection-observer-admin';
 
 const intersectionObserverAdmin = new IntersectionObserverAdmin();
 
+// Add callbacks that will be called when observer detects entering and leaving viewport
+intersectionObserverAdmin.addEnterCallback(element, enterCallback);
+intersectionObserverAdmin.addExitCallback(element, exitCallback);
+
 // add an element to static administrator
-intersectionObserverAdmin.observe(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
+intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
 // add an element in a scrolling container
-intersectionObserverAdmin.add(element, enterCallback, exitCallback, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 }, '.my-list');
+intersectionObserverAdmin.add(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0, scrollableArea: '.my-list' });
 
 // Use in cleanup lifecycle hooks (if applicable) from the element being observed
-intersectionObserverAdmin.unobserve(element, observerOptions, scrollableArea);
+intersectionObserverAdmin.unobserve(element, observerOptions);
 
 // Use in cleanup lifecycle hooks of your application as a whole
 // This will remove the in memory data store holding onto all of the observers
