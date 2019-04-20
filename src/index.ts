@@ -52,7 +52,6 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @method unobserve
    * @param {HTMLElement|Window} target
    * @param {Object} options
-   * @param {String} scrollableArea
    * @public
    */
   public unobserve(target: HTMLElement, options: IOptions): void {
@@ -127,7 +126,6 @@ export default class IntersectionObserverAdmin extends Notifications {
    *
    * @method setupOnIntersection
    * @param {Object} options
-   * @param {String} scrollableArea
    */
   protected setupOnIntersection(options: IOptions): Function {
     return (ioEntries: any) => {
@@ -210,7 +208,6 @@ export default class IntersectionObserverAdmin extends Notifications {
    *
    * @method onIntersection
    * @param {Object} options
-   * @param {String} scrollableArea
    * @param {Array} ioEntries
    * @private
    */
