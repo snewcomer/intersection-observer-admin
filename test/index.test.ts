@@ -1,5 +1,9 @@
+import IntersectionObserverAdmin from '../src/index';
+
 describe('add entry', () => {
-  it('ok', () => {
-    expect(true).toBe(true);
+  it('no options', () => {
+    const el = document.createElement('div');
+    const ioAdmin = new IntersectionObserverAdmin();
+    ioAdmin.observe(el, () => {}, () => {});
   });
 });

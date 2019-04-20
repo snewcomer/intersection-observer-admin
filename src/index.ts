@@ -1,14 +1,5 @@
 import Registry from 'weak-map-element-registry';
 
-export interface IOption {
-  observer?: Function;
-  [key: string]: any;
-}
-
-type Root = {
-  [key: string]: any;
-};
-
 type IndividualEntry = {
   element?: HTMLElement | Window;
   enterCallback?: Function;
@@ -20,9 +11,14 @@ export interface IOptions {
   rootMargin?: string;
   threshold?: number;
   scrollableArea?: string,
-  watcher: IntersectionObserver,
   [key: string]: any;
 }
+
+type Root = {
+  elements: [IndividualEntry];
+  options: IOptions;
+  intersectionObserver: any;
+};
 
 type PotentialRootEntry = {
   [stringifiedOptions: string]: Root;
@@ -44,11 +40,12 @@ export default class IntersectionObserverAdmin {
    * @param {Function} enterCallback
    * @param {Function} exitCallback
    * @param {Object} options
-   * @param {String} scrollableArea
    * @public
    */
   public observe(
     element: HTMLElement,
+    enterCallback: Function,
+    exitCallback: Function,
     options?: IOptions
   ): void {
     if (!element || !options) {
@@ -57,7 +54,7 @@ export default class IntersectionObserverAdmin {
 
     this.registry.add(element, options);
 
-    this.setupObserver(element, options);
+    this.setupObserver(element, enterCallback, exitCallback, options);
   }
 
   /**
@@ -94,10 +91,10 @@ export default class IntersectionObserverAdmin {
     this.registry.destroy();
   }
 
-  private setupObserver(element: HTMLElement, options: IOptions): void {
+  protected setupObserver(element: HTMLElement, enterCallback: Function, exitCallback: Function, options: IOptions): void {
     const { root = window } = options;
 
-    // seoncd find shared root element (window or scrollable area)
+    // find shared root element (window or scrollable area)
     // this root is responsible for coordinating it's set of elements
     const potentialRootMatch:
       | PotentialRootEntry
@@ -116,19 +113,20 @@ export default class IntersectionObserverAdmin {
 
     // next add found entry to elements and call observer if applicable
     if (matchingEntryForRoot) {
-      const { watcher } = matchingEntryForRoot;
-      if (watcher) {
-        watcher.observe(element);
+      const { elements, intersectionObserver } = matchingEntryForRoot;
+      elements.push({ element, enterCallback, exitCallback });
+      if (intersectionObserver) {
+        intersectionObserver.observe(element);
       }
     } else {
       // otherwise start observing this element if applicable
       // watcher is an instance that has an observe method
-      const watcher = this.newObserver(element, options);
+      const intersectionObserver = this.newObserver(element, options);
 
-      const { enterCallback, exitCallback } = options;
       const observerEntry: Root = {
         elements: [{ element, enterCallback, exitCallback }],
-        water: watcher
+        options,
+        intersectionObserver
       };
 
       // and add entry to WeakMap under a root element
@@ -185,7 +183,7 @@ export default class IntersectionObserverAdmin {
    * @param {Array} ioEntries
    * @private
    */
-  protected onIntersection(
+  private onIntersection(
     options: IOptions,
     ioEntries: Array<any>
   ): void {
@@ -240,7 +238,7 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {Object} of elements that share same root
    */
-  protected _findRoot(
+  private _findRoot(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
     if (this.registry) {
@@ -256,7 +254,7 @@ export default class IntersectionObserverAdmin {
    * @param {Object} options
    * @return {Object} entry with elements and other options
    */
-  protected _findMatchingRootEntry(options: IOptions): Root | undefined {
+  private _findMatchingRootEntry(options: IOptions): Root | undefined {
     const { root = window } = options;
     const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(root);
 
@@ -276,7 +274,7 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {Object} containing array of elements and other meta
    */
-  protected _determineMatchingElements(
+  private _determineMatchingElements(
     options: IOptions,
     potentialRootMatch: PotentialRootEntry
   ): Root | undefined {
@@ -298,7 +296,7 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {Boolean}
    */
-  protected _areOptionsSame(
+  private _areOptionsSame(
     options: IOptions,
     comparableOptions: IOptions
   ): boolean {
@@ -333,7 +331,7 @@ export default class IntersectionObserverAdmin {
    * @private
    * @return {String}
    */
-  protected _stringifyOptions(options: IOptions): string {
+  private _stringifyOptions(options: IOptions): string {
     const { scrollableArea } = options;
 
     const replacer = (key: string, value: string): string => {

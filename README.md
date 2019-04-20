@@ -30,8 +30,8 @@ Usage
     - callback function to perform when element is leaving the viewport
 4. observerOptions: Object
     - list of options to pass to Intersection Observer constructor (https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver)
-4. scrollableArea: String
-    - used for determining if element should use existing or new IntersectionObserver
+    - scrollableArea: String
+      - used for determining if element should use existing or new IntersectionObserver
 
 ```js
 import IntersectionObserverAdmin from 'intersection-observer-admin';
