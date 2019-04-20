@@ -36,8 +36,8 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {Object} options
    * @public
    */
-  public observe(element: HTMLElement, options?: IOptions): void {
-    if (!element || !options) {
+  public observe(element: HTMLElement, options: IOptions = {}): void {
+    if (!element) {
       return;
     }
 

@@ -32,10 +32,7 @@ export default class Registry {
       return;
     }
 
-    // first make sure element is in registry
-    if (!this.registry.has(element)) {
-      this.registry.set(element, options || {});
-    }
+    this.registry.set(element, options || {});
   }
 
   /**
