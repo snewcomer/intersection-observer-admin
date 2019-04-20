@@ -10,7 +10,7 @@ export interface IOptions {
   root?: HTMLElement;
   rootMargin?: string;
   threshold?: number;
-  scrollableArea?: string,
+  scrollableArea?: string;
   [key: string]: any;
 }
 
@@ -25,7 +25,7 @@ type PotentialRootEntry = {
 };
 
 export default class IntersectionObserverAdmin {
-  private elementRegistry: Registry
+  private elementRegistry: Registry;
 
   constructor() {
     this.elementRegistry = new Registry();
@@ -71,9 +71,9 @@ export default class IntersectionObserverAdmin {
     options: IOptions,
     scrollableArea: string
   ): void {
-    const matchingRootEntry:
-      | Root
-      | undefined = this._findMatchingRootEntry(options);
+    const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
+      options
+    );
 
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
@@ -91,7 +91,25 @@ export default class IntersectionObserverAdmin {
     this.elementRegistry.destroyRegistry();
   }
 
-  protected setupObserver(element: HTMLElement, enterCallback: Function, exitCallback: Function, options: IOptions): void {
+  /**
+   * use function composition to curry options
+   *
+   * @method setupOnIntersection
+   * @param {Object} options
+   * @param {String} scrollableArea
+   */
+  protected setupOnIntersection(options: IOptions): Function {
+    return (ioEntries: any) => {
+      return this.onIntersection(options, ioEntries);
+    };
+  }
+
+  protected setupObserver(
+    element: HTMLElement,
+    enterCallback: Function,
+    exitCallback: Function,
+    options: IOptions
+  ): void {
     const { root = window } = options;
 
     // find shared root element (window or scrollable area)
@@ -125,8 +143,8 @@ export default class IntersectionObserverAdmin {
 
       const observerEntry: Root = {
         elements: [{ element, enterCallback, exitCallback }],
-        options,
-        intersectionObserver
+        intersectionObserver,
+        options
       };
 
       // and add entry to WeakMap under a root element
@@ -138,7 +156,9 @@ export default class IntersectionObserverAdmin {
         potentialRootMatch[stringifiedOptions] = observerEntry;
       } else {
         // no root exists, so add to WeakMap
-        this.elementRegistry.addElement(root, { [stringifiedOptions]: observerEntry });
+        this.elementRegistry.addElement(root, {
+          [stringifiedOptions]: observerEntry
+        });
       }
     }
   }
@@ -148,7 +168,7 @@ export default class IntersectionObserverAdmin {
     options: IOptions
   ): IntersectionObserver {
     // No matching entry for root in static admin, thus create new IntersectionObserver instance
-    const { root, rootMargin, threshold } = options
+    const { root, rootMargin, threshold } = options;
 
     const newIO = new IntersectionObserver(
       this.setupOnIntersection(options).bind(this),
@@ -160,21 +180,6 @@ export default class IntersectionObserverAdmin {
   }
 
   /**
-   * use function composition to curry options
-   *
-   * @method setupOnIntersection
-   * @param {Object} options
-   * @param {String} scrollableArea
-   */
-  protected setupOnIntersection(
-    options: IOptions
-  ): Function {
-    return (ioEntries: any) => {
-      return this.onIntersection(options, ioEntries);
-    };
-  }
-
-  /**
    * IntersectionObserver callback when element is intersecting viewport
    *
    * @method onIntersection
@@ -183,19 +188,16 @@ export default class IntersectionObserverAdmin {
    * @param {Array} ioEntries
    * @private
    */
-  private onIntersection(
-    options: IOptions,
-    ioEntries: Array<any>
-  ): void {
+  private onIntersection(options: IOptions, ioEntries: Array<any>): void {
     ioEntries.forEach(entry => {
       const { isIntersecting, intersectionRatio } = entry;
 
       // first determine if entry intersecting
       if (isIntersecting) {
         // then find entry's callback in static administration
-        const matchingRootEntry:
-          | Root
-          | undefined = this._findMatchingRootEntry(options);
+        const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
+          options
+        );
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((obj: IndividualEntry) => {
@@ -211,9 +213,9 @@ export default class IntersectionObserverAdmin {
         }
       } else if (intersectionRatio <= 0) {
         // then find entry's callback in static administration
-        const matchingRootEntry:
-          | Root
-          | undefined = this._findMatchingRootEntry(options);
+        const matchingRootEntry: Root | undefined = this._findMatchingRootEntry(
+          options
+        );
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((obj: IndividualEntry) => {
@@ -256,7 +258,9 @@ export default class IntersectionObserverAdmin {
    */
   private _findMatchingRootEntry(options: IOptions): Root | undefined {
     const { root = window } = options;
-    const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(root);
+    const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(
+      root
+    );
 
     if (matchingRoot) {
       const stringifiedOptions: string = this._stringifyOptions(options);
