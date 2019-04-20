@@ -41,10 +41,10 @@ export default abstract class Notifications {
    */
   dispatchCallback(type: CallbackType, element: HTMLElement | Window, data?: any): void {
     if (type === CallbackType.enter) {
-      const { enter } = this._registry.getElement(element)
+      const { enter = () => {} } = this._registry.getElement(element)
       enter(data);
     } else {
-      const { exit } = this._registry.getElement(element)
+      const { exit = () => {} } = this._registry.getElement(element)
       exit(data);
     }
   }
