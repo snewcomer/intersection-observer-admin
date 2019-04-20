@@ -25,21 +25,17 @@ export default abstract class Notifications {
     element: HTMLElement | Window,
     callback: (data?: any) => void
   ): void {
+    let entry;
     if (type === CallbackType.enter) {
-      this.registry.addElement(
-        element,
-        Object.assign({}, this.registry.getElement(element), {
-          [CallbackType.enter]: callback
-        })
-      );
+      entry = { [CallbackType.enter]: callback }
     } else {
-      this.registry.addElement(
-        element,
-        Object.assign({}, this.registry.getElement(element), {
-          [CallbackType.exit]: callback
-        })
-      );
+      entry = { [CallbackType.exit]: callback }
     }
+
+    this.registry.addElement(
+      element,
+      Object.assign({}, this.registry.getElement(element), entry)
+    );
   }
 
   /**
