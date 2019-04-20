@@ -36,10 +36,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {Object} options
    * @public
    */
-  public observe(
-    element: HTMLElement,
-    options?: IOptions
-  ): void {
+  public observe(element: HTMLElement, options?: IOptions): void {
     if (!element || !options) {
       return;
     }
@@ -58,13 +55,10 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {String} scrollableArea
    * @public
    */
-  public unobserve(
-    target: HTMLElement,
-    options: IOptions
-  ): void {
-    const matchingRootEntry: EntryForKey | undefined = this._findMatchingRootEntry(
-      options
-    );
+  public unobserve(target: HTMLElement, options: IOptions): void {
+    const matchingRootEntry:
+      | EntryForKey
+      | undefined = this._findMatchingRootEntry(options);
 
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
@@ -78,8 +72,11 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @method addEnterCallback
    * @public
    */
-  public addEnterCallback(element: HTMLElement | Window, callback: (data?: any) => void) {
-    this.addCallback(CallbackType.enter, element, callback) ;
+  public addEnterCallback(
+    element: HTMLElement | Window,
+    callback: (data?: any) => void
+  ) {
+    this.addCallback(CallbackType.enter, element, callback);
   }
 
   /**
@@ -88,8 +85,11 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @method addExitCallback
    * @public
    */
-  public addExitCallback(element: HTMLElement | Window, callback: (data?: any) => void) {
-    this.addCallback(CallbackType.exit, element, callback) ;
+  public addExitCallback(
+    element: HTMLElement | Window,
+    callback: (data?: any) => void
+  ) {
+    this.addCallback(CallbackType.exit, element, callback);
   }
 
   /**
@@ -99,7 +99,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @public
    */
   public dispatchEnterCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.enter, element, CallbackType.enter)
+    this.dispatchCallback(CallbackType.enter, element, CallbackType.enter);
   }
 
   /**
@@ -109,7 +109,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @public
    */
   public dispatchExitCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.exit, element, CallbackType.exit)
+    this.dispatchCallback(CallbackType.exit, element, CallbackType.exit);
   }
 
   /**
@@ -135,10 +135,7 @@ export default class IntersectionObserverAdmin extends Notifications {
     };
   }
 
-  protected setupObserver(
-    element: HTMLElement,
-    options: IOptions
-  ): void {
+  protected setupObserver(element: HTMLElement, options: IOptions): void {
     const { root = window } = options;
 
     // find shared root element (window or scrollable area)
@@ -224,9 +221,9 @@ export default class IntersectionObserverAdmin extends Notifications {
       // first determine if entry intersecting
       if (isIntersecting) {
         // then find entry's callback in static administration
-        const matchingRootEntry: EntryForKey | undefined = this._findMatchingRootEntry(
-          options
-        );
+        const matchingRootEntry:
+          | EntryForKey
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
@@ -239,9 +236,9 @@ export default class IntersectionObserverAdmin extends Notifications {
         }
       } else if (intersectionRatio <= 0) {
         // then find entry's callback in static administration
-        const matchingRootEntry: EntryForKey | undefined = this._findMatchingRootEntry(
-          options
-        );
+        const matchingRootEntry:
+          | EntryForKey
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {

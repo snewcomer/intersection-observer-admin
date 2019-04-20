@@ -1,15 +1,17 @@
 import Registry from './registry';
 
+const noop = () => {};
+
 export enum CallbackType {
   enter = 'enter',
   exit = 'exit'
 }
 
 export default abstract class Notifications {
-  private _registry: Registry;
+  private registry: Registry;
 
   constructor() {
-    this._registry = new Registry();
+    this.registry = new Registry();
   }
 
   /**
@@ -18,16 +20,24 @@ export default abstract class Notifications {
    * @param key The key of the event
    * @param callback The callback function to invoke when the event occurs
    */
-  addCallback(type: CallbackType, element: HTMLElement | Window, callback: (data?: any) => void): void {
+  public addCallback(
+    type: CallbackType,
+    element: HTMLElement | Window,
+    callback: (data?: any) => void
+  ): void {
     if (type === CallbackType.enter) {
-      this._registry.addElement(
+      this.registry.addElement(
         element,
-        Object.assign({}, this._registry.getElement(element) ,{ [CallbackType.enter]: callback })
+        Object.assign({}, this.registry.getElement(element), {
+          [CallbackType.enter]: callback
+        })
       );
     } else {
-      this._registry.addElement(
+      this.registry.addElement(
         element,
-        Object.assign({}, this._registry.getElement(element) ,{ [CallbackType.exit]: callback })
+        Object.assign({}, this.registry.getElement(element), {
+          [CallbackType.exit]: callback
+        })
       );
     }
   }
@@ -39,22 +49,17 @@ export default abstract class Notifications {
    * @param element
    * @param data
    */
-  dispatchCallback(type: CallbackType, element: HTMLElement | Window, data?: any): void {
+  public dispatchCallback(
+    type: CallbackType,
+    element: HTMLElement | Window,
+    data?: any
+  ): void {
     if (type === CallbackType.enter) {
-      const { enter = () => {} } = this._registry.getElement(element)
+      const { enter = noop } = this.registry.getElement(element);
       enter(data);
     } else {
-      const { exit = () => {} } = this._registry.getElement(element)
+      const { exit = noop } = this.registry.getElement(element);
       exit(data);
     }
-  }
-
-  /**
-   * Removes an EventListener callback for event key.
-   * @param key The key of the event
-   * @param callback The callback function to remove
-   */
-  removeEventListener(element: HTMLElement | Window): void {
-    this._registry.removeElement(element);
   }
 }

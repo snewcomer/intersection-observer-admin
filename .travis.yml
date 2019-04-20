@@ -16,6 +16,7 @@ node_js:
 
 script:
   - npm run test
+  - npm run lint
 
 after_success:
   - npm run report-coverage

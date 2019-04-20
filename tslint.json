@@ -15,7 +15,8 @@
     ],
     "interface-over-type-literal": false,
     "ban-types": false,
-    "array-type": false
+    "array-type": false,
+    "no-empty": false
   },
   "rulesDirectory": [
     "tslint-plugin-prettier"
