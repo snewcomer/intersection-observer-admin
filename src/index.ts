@@ -1,31 +1,38 @@
+import Registry from 'weak-map-element-registry';
+
+export interface IOption {
+  observer?: Function;
+  [key: string]: any;
+}
+
+type Root = {
+  [key: string]: any;
+};
+
 type IndividualEntry = {
   element?: HTMLElement | Window;
   enterCallback?: Function;
   exitCallback?: Function;
 };
 
-export interface IObserverOption {
+export interface IOptions {
   root?: HTMLElement;
   rootMargin?: string;
   threshold?: number;
+  scrollableArea?: string,
+  watcher: IntersectionObserver,
   [key: string]: any;
 }
 
-type RootEntry = {
-  elements: [IndividualEntry];
-  observerOptions: IObserverOption;
-  intersectionObserver: any;
-};
-
 type PotentialRootEntry = {
-  [stringifiedOptions: string]: RootEntry;
+  [stringifiedOptions: string]: Root;
 };
 
 export default class IntersectionObserverAdmin {
-  private DOMRef: WeakMap<HTMLElement | Window, PotentialRootEntry> | null;
+  private registry: Registry
 
   constructor() {
-    this.DOMRef = new WeakMap();
+    this.registry = new Registry();
   }
 
   /**
@@ -36,69 +43,21 @@ export default class IntersectionObserverAdmin {
    * @param {HTMLElement | Window} element
    * @param {Function} enterCallback
    * @param {Function} exitCallback
-   * @param {Object} observerOptions
+   * @param {Object} options
    * @param {String} scrollableArea
    * @public
    */
   public observe(
     element: HTMLElement,
-    enterCallback: Function,
-    exitCallback: Function,
-    observerOptions?: IObserverOption,
-    scrollableArea?: string
+    options?: IOptions
   ): void {
-    if (!element || !observerOptions) {
-      return;
-    }
-    const { root = window } = observerOptions;
-
-    // first find shared root element (window or scrollable area)
-    const potentialRootMatch:
-      | PotentialRootEntry
-      | null
-      | undefined = this._findRoot(root);
-    // second if there is a matching root, find an entry with the same observerOptions
-    let matchingEntryForRoot;
-    if (potentialRootMatch) {
-      matchingEntryForRoot = this._determineMatchingElements(
-        observerOptions,
-        potentialRootMatch
-      );
-    }
-
-    if (matchingEntryForRoot) {
-      const { elements, intersectionObserver } = matchingEntryForRoot;
-      elements.push({ element, enterCallback, exitCallback });
-      intersectionObserver.observe(element);
+    if (!element || !options) {
       return;
     }
 
-    // No matching entry for root in static admin, thus create new IntersectionObserver instance
-    const newIO = new IntersectionObserver(
-      this._setupOnIntersection(observerOptions, scrollableArea).bind(this),
-      observerOptions
-    );
-    newIO.observe(element);
+    this.registry.add(element, options);
 
-    const observerEntry: RootEntry = {
-      elements: [{ element, enterCallback, exitCallback }],
-      intersectionObserver: newIO,
-      observerOptions
-    };
-
-    const stringifiedOptions: string = this._stringifyObserverOptions(
-      observerOptions,
-      scrollableArea
-    );
-    if (potentialRootMatch) {
-      // if share same root and need to add new entry to root match
-      potentialRootMatch[stringifiedOptions] = observerEntry;
-    } else {
-      // no root exists, so add to WeakMap
-      if (this.DOMRef) {
-        this.DOMRef.set(root, { [stringifiedOptions]: observerEntry });
-      }
-    }
+    this.setupObserver(element, options);
   }
 
   /**
@@ -106,33 +65,22 @@ export default class IntersectionObserverAdmin {
    *
    * @method unobserve
    * @param {HTMLElement|Window} target
-   * @param {Object} observerOptions
+   * @param {Object} options
    * @param {String} scrollableArea
    * @public
    */
   public unobserve(
     target: HTMLElement,
-    observerOptions: IObserverOption,
+    options: IOptions,
     scrollableArea: string
   ): void {
     const matchingRootEntry:
-      | RootEntry
-      | undefined = this._findMatchingRootEntry(
-      observerOptions,
-      scrollableArea
-    );
+      | Root
+      | undefined = this._findMatchingRootEntry(options);
 
     if (matchingRootEntry) {
-      const { intersectionObserver, elements } = matchingRootEntry;
+      const { intersectionObserver } = matchingRootEntry;
       intersectionObserver.unobserve(target);
-
-      // important to do this in reverse order
-      for (let i = elements.length - 1; i >= 0; i--) {
-        if (elements[i] && elements[i].element === target) {
-          elements.splice(i, 1);
-          break;
-        }
-      }
     }
   }
 
@@ -143,37 +91,102 @@ export default class IntersectionObserverAdmin {
    * @public
    */
   public destroy(): void {
-    this.DOMRef = null;
+    this.registry.destroy();
+  }
+
+  private setupObserver(element: HTMLElement, options: IOptions): void {
+    const { root = window } = options;
+
+    // seoncd find shared root element (window or scrollable area)
+    // this root is responsible for coordinating it's set of elements
+    const potentialRootMatch:
+      | PotentialRootEntry
+      | null
+      | undefined = this._findRoot(root);
+
+    // third if there is a matching root, see if an existing entry with the same options
+    // regardless of sort order.  This is a bit of work
+    let matchingEntryForRoot;
+    if (potentialRootMatch) {
+      matchingEntryForRoot = this._determineMatchingElements(
+        options,
+        potentialRootMatch
+      );
+    }
+
+    // next add found entry to elements and call observer if applicable
+    if (matchingEntryForRoot) {
+      const { watcher } = matchingEntryForRoot;
+      if (watcher) {
+        watcher.observe(element);
+      }
+    } else {
+      // otherwise start observing this element if applicable
+      // watcher is an instance that has an observe method
+      const watcher = this.newObserver(element, options);
+
+      const { enterCallback, exitCallback } = options;
+      const observerEntry: Root = {
+        elements: [{ element, enterCallback, exitCallback }],
+        water: watcher
+      };
+
+      // and add entry to WeakMap under a root element
+      // with watcher so we can use it later on
+      const stringifiedOptions: string = this._stringifyOptions(options);
+      if (potentialRootMatch) {
+        // if share same root and need to add new entry to root match
+        // not functional but :shrug
+        potentialRootMatch[stringifiedOptions] = observerEntry;
+      } else {
+        // no root exists, so add to WeakMap
+        this.registry.add(root, { [stringifiedOptions]: observerEntry });
+      }
+    }
+  }
+
+  private newObserver(
+    element: HTMLElement,
+    options: IOptions
+  ): IntersectionObserver {
+    // No matching entry for root in static admin, thus create new IntersectionObserver instance
+    const { root, rootMargin, threshold } = options
+
+    const newIO = new IntersectionObserver(
+      this.setupOnIntersection(options).bind(this),
+      { root, rootMargin, threshold }
+    );
+    newIO.observe(element);
+
+    return newIO;
   }
 
   /**
-   * use function composition to curry observerOptions
+   * use function composition to curry options
    *
-   * @method _setupOnIntersection
-   * @param {Object} observerOptions
+   * @method setupOnIntersection
+   * @param {Object} options
    * @param {String} scrollableArea
    */
-  protected _setupOnIntersection(
-    observerOptions: IObserverOption,
-    scrollableArea: string | undefined
+  protected setupOnIntersection(
+    options: IOptions
   ): Function {
-    return (entries: any) => {
-      return this._onIntersection(observerOptions, scrollableArea, entries);
+    return (ioEntries: any) => {
+      return this.onIntersection(options, ioEntries);
     };
   }
 
   /**
    * IntersectionObserver callback when element is intersecting viewport
    *
-   * @method _onIntersection
-   * @param {Object} observerOptions
+   * @method onIntersection
+   * @param {Object} options
    * @param {String} scrollableArea
    * @param {Array} ioEntries
    * @private
    */
-  protected _onIntersection(
-    observerOptions: IObserverOption,
-    scrollableArea: string | undefined,
+  protected onIntersection(
+    options: IOptions,
     ioEntries: Array<any>
   ): void {
     ioEntries.forEach(entry => {
@@ -183,11 +196,8 @@ export default class IntersectionObserverAdmin {
       if (isIntersecting) {
         // then find entry's callback in static administration
         const matchingRootEntry:
-          | RootEntry
-          | undefined = this._findMatchingRootEntry(
-          observerOptions,
-          scrollableArea
-        );
+          | Root
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((obj: IndividualEntry) => {
@@ -204,11 +214,8 @@ export default class IntersectionObserverAdmin {
       } else if (intersectionRatio <= 0) {
         // then find entry's callback in static administration
         const matchingRootEntry:
-          | RootEntry
-          | undefined = this._findMatchingRootEntry(
-          observerOptions,
-          scrollableArea
-        );
+          | Root
+          | undefined = this._findMatchingRootEntry(options);
 
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((obj: IndividualEntry) => {
@@ -227,7 +234,7 @@ export default class IntersectionObserverAdmin {
   }
 
   /**
-   * { root: { stringifiedOptions: { elements: []...] } }
+   * { root: { stringifiedOptions: { observer, elements: []...] } }
    * @method _findRoot
    * @param {HTMLElement|Window} root
    * @private
@@ -236,59 +243,46 @@ export default class IntersectionObserverAdmin {
   protected _findRoot(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
-    if (this.DOMRef) {
-      return this.DOMRef.get(root);
+    if (this.registry) {
+      return this.registry.get(root);
     }
   }
 
   /**
-   * Used for onIntersection callbacks and unobserving the IntersectionObserver
-   * We don't care about observerOptions key order because we already added
-   * to the static administrator or found an existing IntersectionObserver with the same
-   * root && observerOptions to reuse
+   * We don't care about options key order because we already added
+   * to the static administrator
    *
    * @method _findMatchingRootEntry
-   * @param {Object} observerOptions
-   * @param {String} scrollableArea
+   * @param {Object} options
    * @return {Object} entry with elements and other options
    */
-  protected _findMatchingRootEntry(
-    observerOptions: IObserverOption,
-    scrollableArea: string | undefined
-  ): RootEntry | undefined {
-    const { root = window } = observerOptions;
-    const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(
-      root
-    );
+  protected _findMatchingRootEntry(options: IOptions): Root | undefined {
+    const { root = window } = options;
+    const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(root);
+
     if (matchingRoot) {
-      const stringifiedOptions: string = this._stringifyObserverOptions(
-        observerOptions,
-        scrollableArea
-      );
+      const stringifiedOptions: string = this._stringifyOptions(options);
       return matchingRoot[stringifiedOptions];
     }
   }
 
   /**
-   * Determine if existing elements for a given root based on passed in observerOptions
+   * Determine if existing elements for a given root based on passed in options
    * regardless of sort order of keys
    *
    * @method _determineMatchingElements
-   * @param {Object} observerOptions
+   * @param {Object} options
    * @param {Object} potentialRootMatch e.g. { stringifiedOptions: { elements: [], ... }, stringifiedOptions: { elements: [], ... }}
    * @private
    * @return {Object} containing array of elements and other meta
    */
   protected _determineMatchingElements(
-    observerOptions: IObserverOption,
-    potentialRootMatch?: PotentialRootEntry
-  ): RootEntry | undefined {
-    if (!potentialRootMatch) {
-      return;
-    }
+    options: IOptions,
+    potentialRootMatch: PotentialRootEntry
+  ): Root | undefined {
     const matchingKey = Object.keys(potentialRootMatch).filter(key => {
-      const { observerOptions: comparableOptions } = potentialRootMatch[key];
-      return this._areOptionsSame(observerOptions, comparableOptions);
+      const { options: comparableOptions } = potentialRootMatch[key];
+      return this._areOptionsSame(options, comparableOptions);
     })[0];
 
     return potentialRootMatch[matchingKey];
@@ -299,31 +293,30 @@ export default class IntersectionObserverAdmin {
    * object equality.
    *
    * @method _areOptionsSame
-   * @param {Object} observerOptions
+   * @param {Object} options
    * @param {Object} comparableOptions
    * @private
    * @return {Boolean}
    */
   protected _areOptionsSame(
-    observerOptions: IObserverOption,
-    comparableOptions: IObserverOption
+    options: IOptions,
+    comparableOptions: IOptions
   ): boolean {
     // simple comparison of string, number or even null/undefined
-    const type1 = Object.prototype.toString.call(observerOptions);
+    const type1 = Object.prototype.toString.call(options);
     const type2 = Object.prototype.toString.call(comparableOptions);
     if (type1 !== type2) {
       return false;
     } else if (type1 !== '[object Object]' && type2 !== '[object Object]') {
-      return observerOptions === comparableOptions;
+      return options === comparableOptions;
     }
 
     // complex comparison for only type of [object Object]
-    for (const key in observerOptions) {
-      if (observerOptions.hasOwnProperty(key)) {
+    for (const key in options) {
+      if (options.hasOwnProperty(key)) {
         // recursion to check nested
         if (
-          this._areOptionsSame(observerOptions[key], comparableOptions[key]) ===
-          false
+          this._areOptionsSame(options[key], comparableOptions[key]) === false
         ) {
           return false;
         }
@@ -333,18 +326,16 @@ export default class IntersectionObserverAdmin {
   }
 
   /**
-   * Stringify observerOptions for use as a key.
-   * Excludes observerOptions.root so that the resulting key is stable
+   * Stringify options for use as a key.
+   * Excludes options.root so that the resulting key is stable
    *
-   * @param {Object} observerOptions
-   * @param {String} scrollableArea
+   * @param {Object} options
    * @private
    * @return {String}
    */
-  protected _stringifyObserverOptions(
-    observerOptions: IObserverOption,
-    scrollableArea: string | undefined
-  ): string {
+  protected _stringifyOptions(options: IOptions): string {
+    const { scrollableArea } = options;
+
     const replacer = (key: string, value: string): string => {
       if (key === 'root' && scrollableArea) {
         return scrollableArea;
@@ -352,6 +343,6 @@ export default class IntersectionObserverAdmin {
       return value;
     };
 
-    return JSON.stringify(observerOptions, replacer);
+    return JSON.stringify(options, replacer);
   }
 }

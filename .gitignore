@@ -1,5 +1,6 @@
 # docs
 docs/*
+.rpt2_cache
 
 # typescript
 dist
