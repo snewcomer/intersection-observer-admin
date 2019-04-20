@@ -27,9 +27,9 @@ export default abstract class Notifications {
   ): void {
     let entry;
     if (type === CallbackType.enter) {
-      entry = { [CallbackType.enter]: callback }
+      entry = { [CallbackType.enter]: callback };
     } else {
-      entry = { [CallbackType.exit]: callback }
+      entry = { [CallbackType.exit]: callback };
     }
 
     this.registry.addElement(

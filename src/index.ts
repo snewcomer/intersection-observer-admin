@@ -98,7 +98,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @public
    */
   public dispatchEnterCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.enter, element, CallbackType.enter);
+    this.dispatchCallback(CallbackType.enter, element);
   }
 
   /**
@@ -108,7 +108,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @public
    */
   public dispatchExitCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.exit, element, CallbackType.exit);
+    this.dispatchCallback(CallbackType.exit, element);
   }
 
   /**
