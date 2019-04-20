@@ -25,10 +25,10 @@ type PotentialRootEntry = {
 };
 
 export default class IntersectionObserverAdmin {
-  private registry: Registry
+  private elementRegistry: Registry
 
   constructor() {
-    this.registry = new Registry();
+    this.elementRegistry = new Registry();
   }
 
   /**
@@ -52,7 +52,7 @@ export default class IntersectionObserverAdmin {
       return;
     }
 
-    this.registry.add(element, options);
+    this.elementRegistry.addElement(element, options);
 
     this.setupObserver(element, enterCallback, exitCallback, options);
   }
@@ -88,7 +88,7 @@ export default class IntersectionObserverAdmin {
    * @public
    */
   public destroy(): void {
-    this.registry.destroy();
+    this.elementRegistry.destroyRegistry();
   }
 
   protected setupObserver(element: HTMLElement, enterCallback: Function, exitCallback: Function, options: IOptions): void {
@@ -138,7 +138,7 @@ export default class IntersectionObserverAdmin {
         potentialRootMatch[stringifiedOptions] = observerEntry;
       } else {
         // no root exists, so add to WeakMap
-        this.registry.add(root, { [stringifiedOptions]: observerEntry });
+        this.elementRegistry.addElement(root, { [stringifiedOptions]: observerEntry });
       }
     }
   }
@@ -241,8 +241,8 @@ export default class IntersectionObserverAdmin {
   private _findRoot(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
-    if (this.registry) {
-      return this.registry.get(root);
+    if (this.elementRegistry) {
+      return this.elementRegistry.getElement(root);
     }
   }
 
