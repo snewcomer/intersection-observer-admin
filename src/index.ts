@@ -97,8 +97,8 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @method dispatchEnterCallback
    * @public
    */
-  public dispatchEnterCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.enter, element);
+  public dispatchEnterCallback(element: HTMLElement | Window, entry: any) {
+    this.dispatchCallback(CallbackType.enter, element, entry);
   }
 
   /**
@@ -107,8 +107,8 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @method dispatchExitCallback
    * @public
    */
-  public dispatchExitCallback(element: HTMLElement | Window) {
-    this.dispatchCallback(CallbackType.exit, element);
+  public dispatchExitCallback(element: HTMLElement | Window, entry: any) {
+    this.dispatchCallback(CallbackType.exit, element, entry);
   }
 
   /**
@@ -225,7 +225,7 @@ export default class IntersectionObserverAdmin extends Notifications {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
-              this.dispatchEnterCallback(element);
+              this.dispatchEnterCallback(element, entry);
               return true;
             }
             return false;
@@ -240,7 +240,7 @@ export default class IntersectionObserverAdmin extends Notifications {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
-              this.dispatchExitCallback(element);
+              this.dispatchExitCallback(element, entry);
               return true;
             }
             return false;
