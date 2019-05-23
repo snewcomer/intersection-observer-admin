@@ -213,8 +213,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    */
   private onIntersection(options: IOptions, ioEntries: Array<any>): void {
     ioEntries.forEach(entry => {
-      const { isIntersecting, intersectionRatio } = entry;
-      const threshold = options.threshold || 0;
+      const { isIntersecting } = entry;
 
       // then find entry's callback in static administration
       const matchingRootEntry:
@@ -232,7 +231,7 @@ export default class IntersectionObserverAdmin extends Notifications {
             return false;
           });
         }
-      } else if (intersectionRatio <= 1 - threshold) {
+      } else {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
