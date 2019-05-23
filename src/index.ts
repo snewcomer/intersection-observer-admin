@@ -232,7 +232,7 @@ export default class IntersectionObserverAdmin extends Notifications {
             return false;
           });
         }
-      } else if (intersectionRatio <= (1 - threshold)) {
+      } else if (intersectionRatio <= 1 - threshold) {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
