@@ -213,7 +213,11 @@ export default class IntersectionObserverAdmin extends Notifications {
    */
   private onIntersection(options: IOptions, ioEntries: Array<any>): void {
     ioEntries.forEach(entry => {
-      const { isIntersecting } = entry;
+      const { isIntersecting, intersectionRatio } = entry;
+      let threshold = options.threshold || 0;
+      if (Array.isArray(threshold)) {
+        threshold = threshold[threshold.length - 1];
+      }
 
       // then find entry's callback in static administration
       const matchingRootEntry:
@@ -221,7 +225,7 @@ export default class IntersectionObserverAdmin extends Notifications {
         | undefined = this._findMatchingRootEntry(options);
 
       // first determine if entry intersecting
-      if (isIntersecting) {
+      if (isIntersecting || intersectionRatio > threshold) {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
