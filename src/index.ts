@@ -352,11 +352,11 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @return {String}
    */
   private _stringifyOptions(options: IOptions): string {
-    const { scrollableArea } = options;
+    const { root } = options;
 
-    const replacer = (key: string, value: string): string => {
-      if (key === 'root' && scrollableArea) {
-        return scrollableArea;
+    const replacer = (key: string, value: string): HTMLElement | string => {
+      if (key === 'root' && root) {
+        return root;
       }
       return value;
     };
