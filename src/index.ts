@@ -362,7 +362,9 @@ export default class IntersectionObserverAdmin extends Notifications {
           return (acc += item);
         }, '');
 
-        return (root.id += classToken);
+        const id: string = root.id;
+
+        return `${id}-${classToken}`;
       }
 
       return value;
