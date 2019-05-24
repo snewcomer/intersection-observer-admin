@@ -359,10 +359,10 @@ export default class IntersectionObserverAdmin extends Notifications {
         const classList = Array.prototype.slice.call(root.classList);
 
         const classToken = classList.reduce((acc, item) => {
-          return acc += item;
+          return (acc += item);
         }, '');
 
-        return root.id += classToken;
+        return (root.id += classToken);
       }
 
       return value;
