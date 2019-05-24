@@ -354,10 +354,17 @@ export default class IntersectionObserverAdmin extends Notifications {
   private _stringifyOptions(options: IOptions): string {
     const { root } = options;
 
-    const replacer = (key: string, value: string): HTMLElement | string => {
+    const replacer = (key: string, value: string): string => {
       if (key === 'root' && root) {
-        return root;
+        const classList = Array.prototype.slice.call(root.classList);
+
+        const classToken = classList.reduce((acc, item) => {
+          return (acc += item);
+        }, '');
+
+        return (root.id += classToken);
       }
+
       return value;
     };
 
