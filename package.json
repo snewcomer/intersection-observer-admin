@@ -1,6 +1,6 @@
 {
   "name": "intersection-observer-admin",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Intersection Observer Admin for better performance",
   "main": "dist/intersection-observer-admin.umd.js",
   "module": "dist/intersection-observer-admin.es5.js",
