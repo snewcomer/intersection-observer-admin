@@ -9,8 +9,8 @@ export default {
   external: [],
   input: `dist/es/index.js`,
   output: [
-    { file: pkg.main, name: camelCase(libraryName), format: 'umd' },
-    { file: pkg.module, format: 'es' }
+    { file: pkg.main, name: camelCase(libraryName), format: 'umd', sourcemap: true },
+    { file: pkg.module, format: 'es', sourcemap: true }
   ],
   plugins: [
     typescript({
@@ -19,7 +19,6 @@ export default {
     // Resolve source maps to the original source
     sourceMaps()
   ],
-  sourcemap: true,
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   watch: {
     include: 'dist/es/**'
