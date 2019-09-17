@@ -42,11 +42,11 @@ const intersectionObserverAdmin = new IntersectionObserverAdmin();
 intersectionObserverAdmin.addEnterCallback(element, enterCallback);
 intersectionObserverAdmin.addExitCallback(element, exitCallback);
 
-// add an element to static administrator
+// add an element to static administrator with window as scrollable area
 intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
 // add an element in a scrolling container
-intersectionObserverAdmin.add(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0, scrollableArea: '.my-list' });
+intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0, scrollableArea: '.my-list' });
 
 // Use in cleanup lifecycle hooks (if applicable) from the element being observed
 intersectionObserverAdmin.unobserve(element, observerOptions);
