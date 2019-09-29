@@ -311,31 +311,32 @@ export default class IntersectionObserverAdmin extends Notifications {
    * object equality.
    *
    * @method _areOptionsSame
-   * @param {Object} options
-   * @param {Object} comparableOptions
+   * @param {any} a
+   * @param {any} b
    * @private
    * @return {Boolean}
    */
   private _areOptionsSame(
-    options: IOptions,
-    comparableOptions: IOptions
+    a: IOptions | any,
+    b: IOptions | any
   ): boolean {
+    if (a === b) {
+      return true;
+    }
     // simple comparison of string, number or even null/undefined
-    const type1 = Object.prototype.toString.call(options);
-    const type2 = Object.prototype.toString.call(comparableOptions);
+    const type1 = Object.prototype.toString.call(a);
+    const type2 = Object.prototype.toString.call(b);
     if (type1 !== type2) {
       return false;
     } else if (type1 !== '[object Object]' && type2 !== '[object Object]') {
-      return options === comparableOptions;
+      return a === b;
     }
 
     // complex comparison for only type of [object Object]
-    for (const key in options) {
-      if (options.hasOwnProperty(key)) {
+    for (const key in a) {
+      if (a.hasOwnProperty(key)) {
         // recursion to check nested
-        if (
-          this._areOptionsSame(options[key], comparableOptions[key]) === false
-        ) {
+        if (this._areOptionsSame(a[key], b[key]) === false) {
           return false;
         }
       }
