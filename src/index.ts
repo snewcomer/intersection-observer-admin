@@ -316,17 +316,20 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @private
    * @return {Boolean}
    */
-  private _areOptionsSame(
-    a: IOptions | any,
-    b: IOptions | any
-  ): boolean {
-    if (a === b) return true;
+  private _areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
+    if (a === b) {
+      return true;
+    }
 
     if (Array.isArray(a)) {
       length = a.length;
-      if (length != b.length) return false;
-      for (let i = length; i-- !== 0;) {
-        if (!this._areOptionsSame(a[i], b[i])) return false;
+      if (length !== b.length) {
+        return false;
+      }
+      for (let i = length; i !== 0; i--) {
+        if (!this._areOptionsSame(a[i], b[i])) {
+          return false;
+        }
       }
 
       return true;
@@ -341,7 +344,7 @@ export default class IntersectionObserverAdmin extends Notifications {
       return a === b;
     }
 
-    if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a && b && typeof a === 'object' && typeof b === 'object') {
       // complex comparison for only type of [object Object]
       for (const key in a) {
         if (a.hasOwnProperty(key)) {
