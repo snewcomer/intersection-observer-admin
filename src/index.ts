@@ -311,36 +311,52 @@ export default class IntersectionObserverAdmin extends Notifications {
    * object equality.
    *
    * @method _areOptionsSame
-   * @param {Object} options
-   * @param {Object} comparableOptions
+   * @param {any} a
+   * @param {any} b
    * @private
    * @return {Boolean}
    */
-  private _areOptionsSame(
-    options: IOptions,
-    comparableOptions: IOptions
-  ): boolean {
-    // simple comparison of string, number or even null/undefined
-    const type1 = Object.prototype.toString.call(options);
-    const type2 = Object.prototype.toString.call(comparableOptions);
-    if (type1 !== type2) {
-      return false;
-    } else if (type1 !== '[object Object]' && type2 !== '[object Object]') {
-      return options === comparableOptions;
+  private _areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
+    if (a === b) {
+      return true;
     }
 
-    // complex comparison for only type of [object Object]
-    for (const key in options) {
-      if (options.hasOwnProperty(key)) {
-        // recursion to check nested
-        if (
-          this._areOptionsSame(options[key], comparableOptions[key]) === false
-        ) {
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length !== b.length) {
+        return false;
+      }
+      for (let i = length; i !== 0; i--) {
+        if (!this._areOptionsSame(a[i], b[i])) {
           return false;
         }
       }
+
+      return true;
     }
-    return true;
+
+    // simple comparison
+    const type1 = Object.prototype.toString.call(a);
+    const type2 = Object.prototype.toString.call(b);
+    if (type1 !== type2) {
+      return false;
+    } else if (type1 !== '[object Object]' && type2 !== '[object Object]') {
+      return a === b;
+    }
+
+    if (a && b && typeof a === 'object' && typeof b === 'object') {
+      // complex comparison for only type of [object Object]
+      for (const key in a) {
+        if (a.hasOwnProperty(key)) {
+          // recursion to check nested
+          if (this._areOptionsSame(a[key], b[key]) === false) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return a !== a && b !== b;
   }
 
   /**
