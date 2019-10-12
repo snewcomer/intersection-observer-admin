@@ -321,20 +321,6 @@ export default class IntersectionObserverAdmin extends Notifications {
       return true;
     }
 
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length !== b.length) {
-        return false;
-      }
-      for (let i = length; i !== 0; i--) {
-        if (!this._areOptionsSame(a[i], b[i])) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
     // simple comparison
     const type1 = Object.prototype.toString.call(a);
     const type2 = Object.prototype.toString.call(b);
