@@ -356,7 +356,8 @@ export default class IntersectionObserverAdmin extends Notifications {
       }
     }
 
-    return a !== a && b !== b;
+    // if nothing failed
+    return true;
   }
 
   /**
