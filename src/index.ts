@@ -313,7 +313,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {any} a
    * @param {any} b
    * @private
-   * @return {Boolean}
+   * @return {boolean}
    */
   private _areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
     if (a === b) {

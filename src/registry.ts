@@ -9,7 +9,7 @@ export default class Registry {
     this.registry = new WeakMap();
   }
 
-  public elementExists(elem: HTMLElement | Window): Boolean | null {
+  public elementExists(elem: HTMLElement | Window): boolean | null {
     return this.registry.has(elem);
   }
 
