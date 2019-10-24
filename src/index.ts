@@ -5,7 +5,6 @@ export interface IOptions {
   root?: HTMLElement;
   rootMargin?: string;
   threshold?: number;
-  scrollableArea?: string;
   [key: string]: any;
 }
 
@@ -136,7 +135,7 @@ export default class IntersectionObserverAdmin extends Notifications {
   protected setupObserver(element: HTMLElement, options: IOptions): void {
     const { root = window } = options;
 
-    // find shared root element (window or scrollable area)
+    // find shared root element (window or target HTMLElement)
     // this root is responsible for coordinating it's set of elements
     const potentialRootMatch:
       | PotentialRootEntry
@@ -314,7 +313,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {any} a
    * @param {any} b
    * @private
-   * @return {Boolean}
+   * @return {boolean}
    */
   private _areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
     if (a === b) {

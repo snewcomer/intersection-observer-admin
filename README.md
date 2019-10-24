@@ -12,6 +12,8 @@ This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in
 
 Most implementations have one Intersection Observer for each target element or so called `sentinel`.  However, [IntersectionObserver.observe](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/observe) can observer multiple `sentinels`.  So this library will resuse the IntersectionObserver instance for another element on the page with the same set of observer options and root element.  This can dramatically improve performance for pages with lots of elements and observers.
 
+_Note: A companion library is also available for requestAnimationFrame: https://github.com/snewcomer/raf-pool_
+
 Installation
 ------------------------------------------------------------------------------
 
@@ -30,8 +32,6 @@ Usage
     - callback function to perform when element is leaving the viewport
 4. observerOptions: Object
     - list of options to pass to Intersection Observer constructor (https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver)
-    - scrollableArea: String
-      - used for determining if element should use existing or new IntersectionObserver
 
 ```js
 import IntersectionObserverAdmin from 'intersection-observer-admin';
@@ -46,7 +46,7 @@ intersectionObserverAdmin.addExitCallback(element, exitCallback);
 intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
 // add an element in a scrolling container
-intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0, scrollableArea: '.my-list' });
+intersectionObserverAdmin.observe(element, { root, rootMargin: '0px 0px 100px 0px', threshold: 0 });
 
 // Use in cleanup lifecycle hooks (if applicable) from the element being observed
 intersectionObserverAdmin.unobserve(element, observerOptions);
