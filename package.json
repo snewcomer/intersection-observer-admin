@@ -4,7 +4,7 @@
   "description": "Intersection Observer Admin for better performance",
   "main": "dist/intersection-observer-admin.umd.js",
   "module": "dist/intersection-observer-admin.es5.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "tsc && tsc --outDir dist/es && rollup -c rollup.config.ts",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/index.test.ts'",
