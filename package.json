@@ -4,7 +4,7 @@
   "description": "Intersection Observer Admin for better performance",
   "main": "dist/intersection-observer-admin.umd.js",
   "module": "dist/intersection-observer-admin.es5.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc && tsc --outDir dist/es && rollup -c rollup.config.ts",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/index.test.ts'",
@@ -45,6 +45,7 @@
   },
   "homepage": "https://github.com/snewcomer/intersection-observer-admin#readme",
   "devDependencies": {
+    "@rollup/plugin-typescript": "^2.0.1",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.8",
     "gzip-size": "^5.1.1",
@@ -55,7 +56,6 @@
     "rollup": "^1.22.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-typescript2": "^0.24.3",
     "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",

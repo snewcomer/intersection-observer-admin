@@ -1,5 +1,5 @@
+import typescript from '@rollup/plugin-typescript';
 import camelCase from 'lodash.camelcase';
-import typescript from 'rollup-plugin-typescript2';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 
 const pkg = require('./package.json');
@@ -13,9 +13,7 @@ export default {
     { file: pkg.module, format: 'es', sourcemap: true }
   ],
   plugins: [
-    typescript({
-      typescript: require('typescript'),
-    }),
+    typescript(),
     // Resolve source maps to the original source
     sourceMaps()
   ],
