@@ -227,6 +227,7 @@ export default class IntersectionObserverAdmin extends Notifications {
 
       // first determine if entry intersecting
       // https://www.w3.org/TR/intersection-observer/#update-intersection-observations-algo
+      // isIntersecting takes into account zero-area elements
       if (isIntersecting || intersectionRatio >= threshold) {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
