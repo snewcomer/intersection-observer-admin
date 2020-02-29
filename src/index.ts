@@ -204,6 +204,8 @@ export default class IntersectionObserverAdmin extends Notifications {
 
   /**
    * IntersectionObserver callback when element is intersecting viewport
+   * either when `isIntersecting` changes or `intersectionRadio` crosses on of the
+   * configured `threshold`s.
    *
    * @method onIntersection
    * @param {Object} options
@@ -224,7 +226,8 @@ export default class IntersectionObserverAdmin extends Notifications {
         | undefined = this._findMatchingRootEntry(options);
 
       // first determine if entry intersecting
-      if (isIntersecting || intersectionRatio > threshold) {
+      // https://www.w3.org/TR/intersection-observer/#update-intersection-observations-algo
+      if (isIntersecting || intersectionRatio >= threshold) {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
