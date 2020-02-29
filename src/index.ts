@@ -224,7 +224,7 @@ export default class IntersectionObserverAdmin extends Notifications {
         | undefined = this._findMatchingRootEntry(options);
 
       // first determine if entry intersecting
-      if (isIntersecting || intersectionRatio > threshold) {
+      if (isIntersecting || intersectionRatio >= threshold) {
         if (matchingRootEntry) {
           matchingRootEntry.elements.some((element: HTMLElement) => {
             if (element && element === entry.target) {
