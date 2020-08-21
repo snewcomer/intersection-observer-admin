@@ -1,3 +1,4 @@
+// fix by importing IOptions
 export interface IOptions {
   [key: string]: any;
 }
@@ -23,8 +24,8 @@ export default class Registry {
    * @method add
    * @param {HTMLElement | Window} element - the item to add to root element registry
    * @param {IOption} options
-   * @param {IOption.root} root - contains optional root e.g. window, container div, etc
-   * @param {IOption.watcher} observer - optional
+   * @param {IOption.root} [root] - contains optional root e.g. window, container div, etc
+   * @param {IOption.watcher} [observer] - optional
    * @public
    */
   public addElement(element: HTMLElement | Window, options?: IOptions): void {

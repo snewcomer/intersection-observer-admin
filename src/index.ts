@@ -30,7 +30,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * Adds element to observe via IntersectionObserver and stores element + relevant callbacks and observer options in static
    * administrator for lookup in the future
    *
-   * @method add
+   * @method observe
    * @param {HTMLElement | Window} element
    * @param {Object} options
    * @public
@@ -135,15 +135,15 @@ export default class IntersectionObserverAdmin extends Notifications {
   protected setupObserver(element: HTMLElement, options: IOptions): void {
     const { root = window } = options;
 
-    // find shared root element (window or target HTMLElement)
+    // First - find shared root element (window or target HTMLElement)
     // this root is responsible for coordinating it's set of elements
     const potentialRootMatch:
       | PotentialRootEntry
       | null
-      | undefined = this._findRoot(root);
+      | undefined = this._findRootFromRegistry(root);
 
-    // third if there is a matching root, see if an existing entry with the same options
-    // regardless of sort order.  This is a bit of work
+    // Second - if there is a matching root, see if an existing entry with the same options
+    // regardless of sort order. This is a bit of work
     let matchingEntryForRoot;
     if (potentialRootMatch) {
       matchingEntryForRoot = this._determineMatchingElements(
@@ -252,12 +252,12 @@ export default class IntersectionObserverAdmin extends Notifications {
 
   /**
    * { root: { stringifiedOptions: { observer, elements: []...] } }
-   * @method _findRoot
+   * @method _findRootFromRegistry
    * @param {HTMLElement|Window} root
    * @private
    * @return {Object} of elements that share same root
    */
-  private _findRoot(
+  private _findRootFromRegistry(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
     if (this.elementRegistry) {
@@ -275,9 +275,10 @@ export default class IntersectionObserverAdmin extends Notifications {
    */
   private _findMatchingRootEntry(options: IOptions): EntryForKey | undefined {
     const { root = window } = options;
-    const matchingRoot: PotentialRootEntry | null | undefined = this._findRoot(
-      root
-    );
+    const matchingRoot:
+      | PotentialRootEntry
+      | null
+      | undefined = this._findRootFromRegistry(root);
 
     if (matchingRoot) {
       const stringifiedOptions: string = this._stringifyOptions(options);
@@ -334,7 +335,7 @@ export default class IntersectionObserverAdmin extends Notifications {
     if (a && b && typeof a === 'object' && typeof b === 'object') {
       // complex comparison for only type of [object Object]
       for (const key in a) {
-        if (a.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(a, key)) {
           // recursion to check nested
           if (this._areOptionsSame(a[key], b[key]) === false) {
             return false;
