@@ -8,14 +8,14 @@ export interface IOptions {
   [key: string]: any;
 }
 
-type EntryForKey = {
+type StateForRoot = {
   elements: [HTMLElement];
   options: IOptions;
   intersectionObserver: any;
 };
 
 type PotentialRootEntry = {
-  [stringifiedOptions: string]: EntryForKey;
+  [stringifiedOptions: string]: StateForRoot;
 };
 
 export default class IntersectionObserverAdmin extends Notifications {
@@ -55,8 +55,8 @@ export default class IntersectionObserverAdmin extends Notifications {
    */
   public unobserve(target: HTMLElement, options: IOptions): void {
     const matchingRootEntry:
-      | EntryForKey
-      | undefined = this._findMatchingRootEntry(options);
+      | StateForRoot
+      | undefined = this.findMatchingRootEntry(options);
 
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
@@ -140,13 +140,13 @@ export default class IntersectionObserverAdmin extends Notifications {
     const potentialRootMatch:
       | PotentialRootEntry
       | null
-      | undefined = this._findRootFromRegistry(root);
+      | undefined = this.findRootFromRegistry(root);
 
     // Second - if there is a matching root, see if an existing entry with the same options
     // regardless of sort order. This is a bit of work
     let matchingEntryForRoot;
     if (potentialRootMatch) {
-      matchingEntryForRoot = this._determineMatchingElements(
+      matchingEntryForRoot = this.determineMatchingElements(
         options,
         potentialRootMatch
       );
@@ -164,7 +164,7 @@ export default class IntersectionObserverAdmin extends Notifications {
       // watcher is an instance that has an observe method
       const intersectionObserver = this.newObserver(element, options);
 
-      const observerEntry: EntryForKey = {
+      const observerEntry: StateForRoot = {
         elements: [element],
         intersectionObserver,
         options
@@ -172,7 +172,7 @@ export default class IntersectionObserverAdmin extends Notifications {
 
       // and add entry to WeakMap under a root element
       // with watcher so we can use it later on
-      const stringifiedOptions: string = this._stringifyOptions(options);
+      const stringifiedOptions: string = this.stringifyOptions(options);
       if (potentialRootMatch) {
         // if share same root and need to add new entry to root match
         // not functional but :shrug
@@ -206,6 +206,8 @@ export default class IntersectionObserverAdmin extends Notifications {
    * IntersectionObserver callback when element is intersecting viewport
    * either when `isIntersecting` changes or `intersectionRadio` crosses on of the
    * configured `threshold`s.
+   * Exit callback occurs eagerly (when element is initially out of scope)
+   * See https://stackoverflow.com/questions/53214116/intersectionobserver-callback-firing-immediately-on-page-load/53385264#53385264
    *
    * @method onIntersection
    * @param {Object} options
@@ -222,8 +224,8 @@ export default class IntersectionObserverAdmin extends Notifications {
 
       // then find entry's callback in static administration
       const matchingRootEntry:
-        | EntryForKey
-        | undefined = this._findMatchingRootEntry(options);
+        | StateForRoot
+        | undefined = this.findMatchingRootEntry(options);
 
       // first determine if entry intersecting
       if (isIntersecting || intersectionRatio > threshold) {
@@ -252,12 +254,12 @@ export default class IntersectionObserverAdmin extends Notifications {
 
   /**
    * { root: { stringifiedOptions: { observer, elements: []...] } }
-   * @method _findRootFromRegistry
+   * @method findRootFromRegistry
    * @param {HTMLElement|Window} root
    * @private
    * @return {Object} of elements that share same root
    */
-  private _findRootFromRegistry(
+  private findRootFromRegistry(
     root: HTMLElement | Window
   ): PotentialRootEntry | null | undefined {
     if (this.elementRegistry) {
@@ -269,19 +271,19 @@ export default class IntersectionObserverAdmin extends Notifications {
    * We don't care about options key order because we already added
    * to the static administrator
    *
-   * @method _findMatchingRootEntry
+   * @method findMatchingRootEntry
    * @param {Object} options
    * @return {Object} entry with elements and other options
    */
-  private _findMatchingRootEntry(options: IOptions): EntryForKey | undefined {
+  private findMatchingRootEntry(options: IOptions): StateForRoot | undefined {
     const { root = window } = options;
     const matchingRoot:
       | PotentialRootEntry
       | null
-      | undefined = this._findRootFromRegistry(root);
+      | undefined = this.findRootFromRegistry(root);
 
     if (matchingRoot) {
-      const stringifiedOptions: string = this._stringifyOptions(options);
+      const stringifiedOptions: string = this.stringifyOptions(options);
       return matchingRoot[stringifiedOptions];
     }
   }
@@ -290,35 +292,35 @@ export default class IntersectionObserverAdmin extends Notifications {
    * Determine if existing elements for a given root based on passed in options
    * regardless of sort order of keys
    *
-   * @method _determineMatchingElements
+   * @method determineMatchingElements
    * @param {Object} options
    * @param {Object} potentialRootMatch e.g. { stringifiedOptions: { elements: [], ... }, stringifiedOptions: { elements: [], ... }}
    * @private
    * @return {Object} containing array of elements and other meta
    */
-  private _determineMatchingElements(
+  private determineMatchingElements(
     options: IOptions,
     potentialRootMatch: PotentialRootEntry
-  ): EntryForKey | undefined {
-    const matchingKey = Object.keys(potentialRootMatch).filter(key => {
+  ): StateForRoot | undefined {
+    const matchingStringifiedOptions = Object.keys(potentialRootMatch).filter(key => {
       const { options: comparableOptions } = potentialRootMatch[key];
-      return this._areOptionsSame(options, comparableOptions);
+      return this.areOptionsSame(options, comparableOptions);
     })[0];
 
-    return potentialRootMatch[matchingKey];
+    return potentialRootMatch[matchingStringifiedOptions];
   }
 
   /**
    * recursive method to test primitive string, number, null, etc and complex
    * object equality.
    *
-   * @method _areOptionsSame
+   * @method areOptionsSame
    * @param {any} a
    * @param {any} b
    * @private
    * @return {boolean}
    */
-  private _areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
+  private areOptionsSame(a: IOptions | any, b: IOptions | any): boolean {
     if (a === b) {
       return true;
     }
@@ -337,7 +339,7 @@ export default class IntersectionObserverAdmin extends Notifications {
       for (const key in a) {
         if (Object.prototype.hasOwnProperty.call(a, key)) {
           // recursion to check nested
-          if (this._areOptionsSame(a[key], b[key]) === false) {
+          if (this.areOptionsSame(a[key], b[key]) === false) {
             return false;
           }
         }
@@ -356,7 +358,7 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @private
    * @return {String}
    */
-  private _stringifyOptions(options: IOptions): string {
+  private stringifyOptions(options: IOptions): string {
     const { root } = options;
 
     const replacer = (key: string, value: string): string => {
