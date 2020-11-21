@@ -1,0 +1,35 @@
+name: CI
+
+on: [push]
+
+jobs:
+
+  test:
+    name: "Tests"
+    env:
+      CI: true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install node
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: 12.x
+
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-lint-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    - name: npm install
+      run: npm install
+    - name: lint js
+      run: npm run lint
+    - name: test
+      run: npm run test
