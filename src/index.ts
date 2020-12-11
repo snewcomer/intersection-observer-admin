@@ -302,10 +302,12 @@ export default class IntersectionObserverAdmin extends Notifications {
     options: IOptions,
     potentialRootMatch: PotentialRootEntry
   ): StateForRoot | undefined {
-    const matchingStringifiedOptions = Object.keys(potentialRootMatch).filter(key => {
-      const { options: comparableOptions } = potentialRootMatch[key];
-      return this.areOptionsSame(options, comparableOptions);
-    })[0];
+    const matchingStringifiedOptions = Object.keys(potentialRootMatch).filter(
+      key => {
+        const { options: comparableOptions } = potentialRootMatch[key];
+        return this.areOptionsSame(options, comparableOptions);
+      }
+    )[0];
 
     return potentialRootMatch[matchingStringifiedOptions];
   }
