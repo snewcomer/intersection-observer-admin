@@ -40,7 +40,13 @@ export default class IntersectionObserverAdmin extends Notifications {
       return;
     }
 
-    this.elementRegistry.addElement(element, options);
+    const copiedOptions = Object.create(null);
+    for (const key in options) {
+      if (typeof options === 'object' && options.hasOwnProperty(key)) {
+        copiedOptions[key] = options[key];
+      }
+    }
+    this.elementRegistry.addElement(element, copiedOptions);
 
     this.setupObserver(element, options);
   }
@@ -253,7 +259,7 @@ export default class IntersectionObserverAdmin extends Notifications {
   }
 
   /**
-   * { root: { stringifiedOptions: { observer, elements: []...] } }
+   * { root: div, stringifiedOptions: { observer, elements: []...] } }
    * @method findRootFromRegistry
    * @param {HTMLElement|Window} root
    * @private
