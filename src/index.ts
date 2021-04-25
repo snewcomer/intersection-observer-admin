@@ -35,14 +35,20 @@ export default class IntersectionObserverAdmin extends Notifications {
    * @param {Object} options
    * @public
    */
-  public observe(element: HTMLElement, options: IOptions = {}): void {
+  public observe(
+    element: HTMLElement,
+    options: IOptions = Object.create(null)
+  ): void {
     if (!element) {
       return;
     }
 
     const copiedOptions = Object.create(null);
     for (const key in options) {
-      if (typeof options === 'object' && options.hasOwnProperty(key)) {
+      if (
+        typeof options === 'object' &&
+        Object.prototype.hasOwnProperty.call(options, key)
+      ) {
         copiedOptions[key] = options[key];
       }
     }
