@@ -173,11 +173,7 @@ export default class IntersectionObserverAdmin extends Notifications {
       // and add entry to WeakMap under a root element
       // with watcher so we can use it later on
       const stringifiedOptions: string = this.stringifyOptions(options);
-      if (potentialRootMatch) {
-        // if share same root and need to add new entry to root match
-        // not functional but :shrug
-        potentialRootMatch[stringifiedOptions] = observerEntry;
-      } else {
+      if (!potentialRootMatch) {
         // no root exists, so add to WeakMap
         this.elementRegistry.addElement(root, {
           [stringifiedOptions]: observerEntry
