@@ -159,10 +159,8 @@ export default class IntersectionObserverAdmin extends Notifications {
       if (intersectionObserver) {
         intersectionObserver.observe(element);
       }
-    } else if (!potentialRootMatch) {
+    } else {
       // otherwise start observing this element if applicable
-      // and add entry to WeakMap under a root element
-      // with watcher so we can use it later on
       // watcher is an instance that has an observe method
       const intersectionObserver = this.newObserver(element, options);
 
@@ -172,12 +170,19 @@ export default class IntersectionObserverAdmin extends Notifications {
         options
       };
 
+      // and add entry to WeakMap under a root element
+      // with watcher so we can use it later on
       const stringifiedOptions: string = this.stringifyOptions(options);
-
-      // no root exists, so add to WeakMap
-      this.elementRegistry.addElement(root, {
-        [stringifiedOptions]: observerEntry
-      });
+      if (potentialRootMatch) {
+        // if share same root and need to add new entry to root match
+        // not functional but :shrug
+        potentialRootMatch[stringifiedOptions] = observerEntry;
+      } else {
+        // no root exists, so add to WeakMap
+        this.elementRegistry.addElement(root, {
+          [stringifiedOptions]: observerEntry
+        });
+      }
     }
   }
 
