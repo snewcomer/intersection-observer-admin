@@ -3,9 +3,6 @@ intersection-observer-admin
 ![Download count all time](https://img.shields.io/npm/dt/intersection-observer-admin.svg)
 [![npm version](https://badge.fury.io/js/intersection-observer-admin.svg)](http://badge.fury.io/js/intersection-observer-admin)
 
-[![Dependency Status](https://david-dm.org/snewcomer/intersection-observer-admin.svg)](https://david-dm.org/snewcomer/intersection-observer-admin)
-[![devDependency Status](https://david-dm.org/snewcomer/intersection-observer-admin/dev-status.svg)](https://david-dm.org/snewcomer/intersection-observer-admin#info=devDependencies)
-
 Why use an administrator to manage all the elements on my page?
 ------------------------------------------------------------------------------
 This library is used in [ember-in-viewport](https://github.com/DockYard/ember-in-viewport) and [ember-infinity](https://github.com/ember-infinity/ember-infinity).  This library is particularly important for re-using the IntersectionObserver API.

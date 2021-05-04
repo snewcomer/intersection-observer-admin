@@ -54,8 +54,11 @@ export default abstract class Notifications {
       const { enter = noop } = this.registry.getElement(element);
       enter(data);
     } else {
-      const { exit = noop } = this.registry.getElement(element);
-      exit(data);
+      // no element in WeakMap possible because element may be removed from DOM by the time we get here
+      const found = this.registry.getElement(element);
+      if (found && found.exit) {
+        found.exit(data);
+      }
     }
   }
 }
