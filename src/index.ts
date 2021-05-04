@@ -40,9 +40,9 @@ export default class IntersectionObserverAdmin extends Notifications {
       return;
     }
 
-    this.elementRegistry.addElement(element, options);
+    this.elementRegistry.addElement(element, { ...options });
 
-    this.setupObserver(element, options);
+    this.setupObserver(element, { ...options });
   }
 
   /**
