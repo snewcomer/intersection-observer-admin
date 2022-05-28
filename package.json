@@ -61,7 +61,13 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.6.3"
+    "typescript": "^4.7.2"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "volta": {
+    "node": "14.19.1"
+  },
+  "engines": {
+    "node": ">= 14.*"
+  }
 }
