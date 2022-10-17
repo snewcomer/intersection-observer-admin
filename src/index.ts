@@ -4,7 +4,7 @@ import Registry from './registry';
 export interface IOptions {
   root?: HTMLElement;
   rootMargin?: string;
-  threshold?: number;
+  threshold?: number | number[];
   [key: string]: any;
 }
 
