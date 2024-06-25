@@ -1,23 +1,23 @@
 import IntersectionObserverAdmin from '../src/index';
 
 class IntersectionObserver {
-  root = null;
-  rootMargin = '';
-  thresholds = [];
+  public root = null;
+  public rootMargin = '';
+  public thresholds = [];
 
-  disconnect() {
+  public disconnect() {
     return null;
   }
 
-  observe() {
+  public observe() {
     return null;
   }
 
-  takeRecords() {
+  public takeRecords() {
     return [];
   }
 
-  unobserve() {
+  public unobserve() {
     return null;
   }
 }
@@ -46,35 +46,35 @@ describe('elements', () => {
   });
 
   it('observe', () => {
-    const el_1 = document.createElement('div');
-    const el_2 = document.createElement('div');
-    const el_3 = document.createElement('div');
+    const el1 = document.createElement('div');
+    const el2 = document.createElement('div');
+    const el3 = document.createElement('div');
     const ioAdmin = new IntersectionObserverAdmin();
 
-    ioAdmin.observe(el_1);
-    ioAdmin.observe(el_2);
-    ioAdmin.observe(el_3);
+    ioAdmin.observe(el1);
+    ioAdmin.observe(el2);
+    ioAdmin.observe(el3);
 
-    expect(ioAdmin.elementExists(el_1)).toBeTruthy();
-    expect(ioAdmin.elementExists(el_2)).toBeTruthy();
-    expect(ioAdmin.elementExists(el_3)).toBeTruthy();
+    expect(ioAdmin.elementExists(el1)).toBeTruthy();
+    expect(ioAdmin.elementExists(el2)).toBeTruthy();
+    expect(ioAdmin.elementExists(el3)).toBeTruthy();
   });
 
   it('unobserve', () => {
-    const el_1 = document.createElement('div');
-    const el_2 = document.createElement('div');
-    const el_3 = document.createElement('div');
+    const el1 = document.createElement('div');
+    const el2 = document.createElement('div');
+    const el3 = document.createElement('div');
     const ioAdmin = new IntersectionObserverAdmin();
 
-    ioAdmin.observe(el_1);
-    ioAdmin.observe(el_2);
-    ioAdmin.observe(el_3);
+    ioAdmin.observe(el1);
+    ioAdmin.observe(el2);
+    ioAdmin.observe(el3);
 
-    ioAdmin.unobserve(el_1, {});
-    ioAdmin.unobserve(el_3, {});
+    ioAdmin.unobserve(el1, {});
+    ioAdmin.unobserve(el3, {});
 
-    expect(ioAdmin.elementExists(el_1)).toBeFalsy();
-    expect(ioAdmin.elementExists(el_2)).toBeTruthy();
-    expect(ioAdmin.elementExists(el_3)).toBeFalsy();
+    expect(ioAdmin.elementExists(el1)).toBeFalsy();
+    expect(ioAdmin.elementExists(el2)).toBeTruthy();
+    expect(ioAdmin.elementExists(el3)).toBeFalsy();
   });
 });

@@ -65,6 +65,7 @@ export default class IntersectionObserverAdmin extends Notifications {
       if (elIndex !== -1) {
         matchingRootEntry.elements.splice(elIndex, 1);
       }
+      this.removeElement(target);
     }
   }
 
