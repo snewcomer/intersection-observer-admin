@@ -9,7 +9,7 @@ export interface IOptions {
 }
 
 type StateForRoot = {
-  elements: [HTMLElement];
+  elements: HTMLElement[];
   options: IOptions;
   intersectionObserver: any;
 };
@@ -61,7 +61,10 @@ export default class IntersectionObserverAdmin extends Notifications {
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
       intersectionObserver.unobserve(target);
-      this.removeElement(target);
+      const elIndex = matchingRootEntry.elements.indexOf(target);
+      if (elIndex !== -1) {
+        matchingRootEntry.elements.splice(elIndex, 1);
+      }
     }
   }
 
