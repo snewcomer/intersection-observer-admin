@@ -61,6 +61,7 @@ export default class IntersectionObserverAdmin extends Notifications {
     if (matchingRootEntry) {
       const { intersectionObserver } = matchingRootEntry;
       intersectionObserver.unobserve(target);
+      this.removeElement(target);
     }
   }
 
@@ -121,6 +122,32 @@ export default class IntersectionObserverAdmin extends Notifications {
   }
 
   /**
+   * cleanup removes provided elements from both registries
+   *
+   * @method removeElement
+   * @public
+   *
+   */
+  public removeElement(element: HTMLElement | Window): void {
+    this.removeElementNotification(element);
+    this.elementRegistry.removeElement(element);
+  }
+
+  /**
+   * checks whether element exists in either registry
+   *
+   * @method elementExists
+   * @public
+   *
+   */
+  public elementExists(element: HTMLElement | Window): boolean {
+    return Boolean(
+      this.elementNotificationExists(element) ||
+        this.elementRegistry.elementExists(element)
+    );
+  }
+
+  /**
    * use function composition to curry options
    *
    * @method setupOnIntersection
@@ -177,7 +204,7 @@ export default class IntersectionObserverAdmin extends Notifications {
         // if share same root and need to add new entry to root match
         // not functional but :shrug
         potentialRootMatch[stringifiedOptions] = observerEntry;
-      } else {
+      } else if (!this.elementRegistry.elementExists(root)) {
         // no root exists, so add to WeakMap
         this.elementRegistry.addElement(root, {
           [stringifiedOptions]: observerEntry

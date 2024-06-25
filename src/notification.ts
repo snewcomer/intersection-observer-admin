@@ -38,6 +38,14 @@ export default abstract class Notifications {
     );
   }
 
+  public removeElementNotification(element: HTMLElement | Window) {
+    this.registry.removeElement(element);
+  }
+  
+  public elementNotificationExists(element: HTMLElement | Window): boolean {
+    return Boolean(this.registry.elementExists(element));
+  }
+
   /**
    * @hidden
    * Executes registered callbacks for key.
