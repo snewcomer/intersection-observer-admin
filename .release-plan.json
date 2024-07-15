@@ -1,0 +1,21 @@
+{
+  "solution": {
+    "intersection-observer-admin": {
+      "impact": "patch",
+      "oldVersion": "0.3.3",
+      "newVersion": "0.3.4",
+      "constraints": [
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :bug: Bug Fix"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :house: Internal"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2024-07-15)\n\nintersection-observer-admin 0.3.4 (patch)\n\n#### :bug: Bug Fix\n* `intersection-observer-admin`\n  * [#58](https://github.com/snewcomer/intersection-observer-admin/pull/58) feat(memory-leaks): remove elements from the window root ([@BobrImperator](https://github.com/BobrImperator))\n  * [#55](https://github.com/snewcomer/intersection-observer-admin/pull/55) feat(memory-leaks): remove elements from registries when unobserve is called  ([@BobrImperator](https://github.com/BobrImperator))\n  * [#49](https://github.com/snewcomer/intersection-observer-admin/pull/49) fix leak by releasing ref to observed element ([@SergeAstapov](https://github.com/SergeAstapov))\n\n#### :house: Internal\n* `intersection-observer-admin`\n  * [#57](https://github.com/snewcomer/intersection-observer-admin/pull/57) add release-plan ([@mansona](https://github.com/mansona))\n\n#### Committers: 3\n- Bartlomiej Dudzik ([@BobrImperator](https://github.com/BobrImperator))\n- Chris Manson ([@mansona](https://github.com/mansona))\n- Sergey Astapov ([@SergeAstapov](https://github.com/SergeAstapov))\n"
+}
