@@ -7,6 +7,8 @@
   ],
   "jsRules": {},
   "rules": {
+    "variable-name": false,
+    "member-access": false,
     "no-unused-variable": true,
     "prettier": [
       true,
