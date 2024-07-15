@@ -59,12 +59,10 @@ export default class IntersectionObserverAdmin extends Notifications {
       | undefined = this.findMatchingRootEntry(options);
 
     if (matchingRootEntry) {
-      const { intersectionObserver } = matchingRootEntry;
-      intersectionObserver.unobserve(target);
-      const elIndex = matchingRootEntry.elements.indexOf(target);
-      if (elIndex !== -1) {
-        matchingRootEntry.elements.splice(elIndex, 1);
-      }
+      this.clearRootEntry(target, matchingRootEntry);
+    } else {
+      this.removeElement(target);
+      this.clearDefaultRoot(target);
     }
   }
 
@@ -410,5 +408,27 @@ export default class IntersectionObserverAdmin extends Notifications {
     };
 
     return JSON.stringify(options, replacer);
+  }
+
+  private clearRootEntry(target: HTMLElement, rootState: StateForRoot) {
+    const { intersectionObserver } = rootState;
+    intersectionObserver.unobserve(target);
+
+    if (rootState.elements) {
+      rootState.elements = rootState.elements.filter(
+        (el: any) => el !== target
+      );
+    }
+    this.removeElement(target);
+    this.clearDefaultRoot(target);
+  }
+
+  private clearDefaultRoot(target: HTMLElement) {
+    const windowRoot = this.elementRegistry.getElement(window);
+    if (windowRoot && windowRoot.elements) {
+      windowRoot.elements = windowRoot.elements.filter(
+        (el: any) => el !== target
+      );
+    }
   }
 }
