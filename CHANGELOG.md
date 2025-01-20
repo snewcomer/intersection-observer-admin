@@ -1,5 +1,10 @@
 # Changelog
 
+
+
+
+
+
 ## Release (2024-07-15)
 
 intersection-observer-admin 0.3.4 (patch)
